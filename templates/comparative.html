@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% set active_page = 'comparative' %}
+{% block title %}Comparative Lab - ML Academy{% endblock %}
+
+{% block content %}
+<main class="p-xl max-w-container-max mx-auto w-full space-y-xl">
+<header class="mb-lg">
+<h2 class="font-display-lg text-on-surface mb-2">Análisis Comparativo</h2>
+<p class="font-body-lg text-on-surface-variant max-w-3xl">Una evaluación detallada entre las arquitecturas de Bagging (Enfoque Paralelo) y Boosting (Enfoque Secuencial) para la reducción de error en modelos de ensamble.</p>
+</header>
+
+<!-- Comparison Table Card -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden">
+<div class="px-lg py-md border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h3 class="font-label-caps text-on-surface">Enfoque Paralelo vs Secuencial</h3>
+<button class="text-on-surface-variant hover:text-secondary transition-colors" title="Información técnica">
+<span class="material-symbols-outlined text-[18px]">info</span>
+</button>
+</div>
+<div class="p-lg overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[800px]">
+<thead>
+<tr class="border-b border-outline-variant text-on-surface-variant font-label-caps">
+<th class="py-sm px-4 w-1/4">Característica</th>
+<th class="py-sm px-4 w-3/8 border-l-4 border-secondary-container">Bagging (Random Forest)</th>
+<th class="py-sm px-4 w-3/8 border-l-4 border-tertiary-container">Boosting (XGBoost, AdaBoost)</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-on-surface">
+<tr class="border-b border-surface-container hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-4 font-medium">Arquitectura</td>
+<td class="py-3 px-4">Modelos independientes entrenados en paralelo.</td>
+<td class="py-3 px-4">Modelos dependientes entrenados secuencialmente.</td>
+</tr>
+<tr class="border-b border-surface-container hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-4 font-medium">Objetivo Principal</td>
+<td class="py-3 px-4">Reducir la varianza (Overfitting).</td>
+<td class="py-3 px-4">Reducir el sesgo (Underfitting).</td>
+</tr>
+<tr class="border-b border-surface-container hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-4 font-medium">Ponderación de Datos</td>
+<td class="py-3 px-4">Todos los datos de entrenamiento tienen igual peso.</td>
+<td class="py-3 px-4">Mayor peso a las instancias clasificadas incorrectamente.</td>
+</tr>
+<tr class="border-b border-surface-container hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-4 font-medium">Sensibilidad a Outliers</td>
+<td class="py-3 px-4">Robusto frente a valores atípicos.</td>
+<td class="py-3 px-4">Altamente sensible a valores atípicos.</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-4 font-medium">Complejidad Computacional</td>
+<td class="py-3 px-4">Fácilmente paralelizable, más rápido en general.</td>
+<td class="py-3 px-4">Secuencial, generalmente más lento de entrenar.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- Bento Grid: Use Cases & Tuning -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Use Cases -->
+<section class="md:col-span-5 flex flex-col space-y-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden flex-1">
+<div class="px-lg py-md border-b border-outline-variant bg-surface-container-low">
+<h3 class="font-label-caps text-on-surface">Casos de Uso Estratégicos</h3>
+</div>
+<div class="p-lg space-y-6">
+<div class="flex items-start">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center mr-4 flex-shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container">scatter_plot</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-on-surface mb-1">Alta Varianza (Bagging)</h4>
+<p class="font-body-sm text-on-surface-variant">Utilice cuando el modelo base (ej. Árboles profundos) es propenso al sobreajuste. Ideal para datos ruidosos donde la estabilidad es primordial.</p>
+</div>
+</div>
+<div class="flex items-start">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center mr-4 flex-shrink-0">
+<span class="material-symbols-outlined text-on-tertiary-fixed">trending_down</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-on-surface mb-1">Alto Sesgo (Boosting)</h4>
+<p class="font-body-sm text-on-surface-variant">Utilice cuando el modelo base es demasiado simple (ej. Stumps). Excelente para maximizar la precisión predictiva si los datos están limpios.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Parameter Tuning Mockup -->
+<section class="md:col-span-7 bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden flex flex-col">
+<div class="px-lg py-md border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h3 class="font-label-caps text-on-surface">Panel de Afinación (Tuning)</h3>
+<span class="font-mono-data text-secondary">Interactive_Mode: ON</span>
+</div>
+<div class="p-lg flex-1 grid-paper relative flex flex-col">
+<!-- Abstract Visualization Area -->
+<div class="h-48 mb-6 border border-outline-variant bg-surface-bright rounded flex items-center justify-center relative overflow-hidden">
+<span class="font-label-caps text-on-surface-variant absolute top-2 left-2 z-10">Error de Validación Mínimo</span>
+<div class="absolute bottom-0 left-0 w-full h-full p-4 flex items-end">
+<svg class="w-full h-full text-secondary opacity-70" preserveAspectRatio="none" viewBox="0 0 100 100">
+<path d="M0,80 Q25,20 50,40 T100,10" fill="none" stroke="currentColor" stroke-width="2"></path>
+<path class="opacity-50" d="M0,90 Q30,50 60,60 T100,20" fill="none" stroke="#271901" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+
+<!-- Controls -->
+<div class="space-y-6 mt-auto bg-surface/90 p-4 rounded border border-outline-variant backdrop-blur-sm">
+<div>
+<div class="flex justify-between mb-1">
+<label class="font-label-caps text-on-surface">Número de Estimadores (n_estimators)</label>
+<span class="font-mono-data text-secondary">100</span>
+</div>
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" max="500" min="10" type="range" value="100"/>
+<div class="flex justify-between mt-1 text-xs text-outline font-mono-data">
+<span>10</span>
+<span>500</span>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-1">
+<label class="font-label-caps text-on-surface">Tasa de Aprendizaje (learning_rate) - Solo Boosting</label>
+<span class="font-mono-data text-tertiary-container">0.1</span>
+</div>
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-tertiary-container" max="1" min="0.01" step="0.01" type="range" value="0.1"/>
+</div>
+<div class="flex justify-end pt-2 border-t border-outline-variant">
+<button class="bg-secondary text-on-secondary font-label-caps px-6 py-2 rounded hover:bg-on-secondary-container transition-colors">
+Ejecutar Simulación
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+{% endblock %}

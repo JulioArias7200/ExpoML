@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{% block title %}ML Academy{% endblock %}</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "on-error-container": "#93000a",
+        "surface-variant": "#e4e2e4",
+        "secondary": "#006a61",
+        "on-secondary-fixed-variant": "#005049",
+        "on-tertiary-container": "#98805d",
+        "inverse-surface": "#303032",
+        "on-secondary-container": "#006f66",
+        "secondary-fixed-dim": "#6bd8cb",
+        "surface": "#fcf8fa",
+        "on-error": "#ffffff",
+        "background": "#fcf8fa",
+        "inverse-primary": "#bec6e0",
+        "secondary-container": "#86f2e4",
+        "surface-container-highest": "#e4e2e4",
+        "surface-container-high": "#eae7e9",
+        "surface-tint": "#565e74",
+        "on-tertiary-fixed-variant": "#574425",
+        "surface-bright": "#fcf8fa",
+        "secondary-fixed": "#89f5e7",
+        "outline": "#76777d",
+        "on-secondary-fixed": "#00201d",
+        "tertiary-fixed": "#fcdeb5",
+        "on-tertiary": "#ffffff",
+        "surface-dim": "#dcd9db",
+        "tertiary-container": "#271901",
+        "error-container": "#ffdad6",
+        "on-primary": "#ffffff",
+        "on-surface-variant": "#45464d",
+        "surface-container-low": "#f6f3f5",
+        "primary-fixed-dim": "#bec6e0",
+        "on-surface": "#1b1b1d",
+        "primary-container": "#131b2e",
+        "on-tertiary-fixed": "#271901",
+        "primary": "#000000",
+        "surface-container": "#f0edef",
+        "primary-fixed": "#dae2fd",
+        "error": "#ba1a1a",
+        "on-primary-container": "#7c839b",
+        "on-primary-fixed-variant": "#3f465c",
+        "tertiary-fixed-dim": "#dec29a",
+        "outline-variant": "#c6c6cd",
+        "on-primary-fixed": "#131b2e",
+        "on-secondary": "#ffffff",
+        "on-background": "#1b1b1d",
+        "inverse-on-surface": "#f3f0f2",
+        "tertiary": "#000000",
+        "surface-container-lowest": "#ffffff"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+      },
+      "spacing": {
+        "base": "4px",
+        "xl": "40px",
+        "md": "16px",
+        "gutter": "24px",
+        "xs": "4px",
+        "sm": "8px",
+        "lg": "24px",
+        "container-max": "1440px"
+      },
+      "fontFamily": {
+        "display-lg": ["Inter"],
+        "body-md": ["Inter"],
+        "label-caps": ["Inter"],
+        "headline-sm": ["Inter"],
+        "headline-md": ["Inter"],
+        "mono-data": ["monospace"],
+        "body-lg": ["Inter"],
+        "body-sm": ["Inter"]
+      },
+      "fontSize": {
+        "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+        "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+      }
+    }
+  }
+}
+</script>
+<style>
+.grid-pattern, .grid-paper, .grid-paper-bg {
+  background-image: linear-gradient(to right, #F1F5F9 1px, transparent 1px), linear-gradient(to bottom, #F1F5F9 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col md:flex-row">
+<!-- Mobile TopNav -->
+<nav class="md:hidden bg-surface border-b border-outline-variant fixed top-0 w-full z-50 flex justify-between items-center px-lg py-sm max-w-container-max mx-auto transition-all duration-200 ease-in-out shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">science</span>
+<span class="font-headline-md font-bold text-primary">ML Academy</span>
+</div>
+<div class="flex gap-4 text-primary">
+<button class="cursor-pointer hover:text-secondary transition-colors" aria-label="School"><span class="material-symbols-outlined">school</span></button>
+<button class="cursor-pointer hover:text-secondary transition-colors" aria-label="Help"><span class="material-symbols-outlined">help_outline</span></button>
+<img class="w-8 h-8 rounded-full border border-outline-variant object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXSSn9vWG54DVc1ck_mG0v3r28HSRF3MiQmF-JpxKF0VQOj2qllOKHbQhcgLb_j-uWwA_t-Y4Xjr8tcB4AS0o3QtMx0slSyjkTizTz_m4kGKkHVp_Iv_wIY8X93iYK3w-5xVWHmsYlk743zSX6aok_eybTSB7bq5u88igkD4nwqe3c-AaJ3KY0r_if4VqAYsfm38eAwDeiPx5IiplV3KY5Z-s_G94JQBGXTp-x3cTthv3sKvC75QmlTw" alt="Profile"/>
+</div>
+</nav>
+
+<!-- SideNavBar (Desktop) -->
+<aside class="hidden md:flex bg-surface-container-low border-r border-outline-variant fixed left-0 top-0 h-full flex-col pt-16 pb-lg w-64 z-40 shrink-0">
+<div class="px-md mb-4">
+<h1 class="font-headline-sm font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">science</span>
+ML Ensemble Lab
+</h1>
+<p class="text-on-surface-variant text-xs mt-1 font-body-sm leading-tight">heart_disease.csv · 10.000 × 21<br>Bagging vs Boosting</p>
+<span class="inline-flex items-center gap-1 mt-2 text-[10px] font-label-caps bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full">
+<span class="w-2 h-2 bg-secondary rounded-full"></span> Dataset cargado
+</span>
+</div>
+<nav class="flex-1 overflow-y-auto">
+<ul class="space-y-sm px-sm">
+<li>
+<a class="flex items-center gap-3 py-2 px-md rounded-lg hover:bg-surface-container-high transition-colors {% if active_page == 'index' %}text-secondary font-bold border-l-4 border-secondary pl-2 bg-surface-container-highest{% else %}text-on-surface-variant pl-3{% endif %}" href="{{ url_for('index') }}">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<div class="flex flex-col leading-none">
+<span class="font-label-caps">Overview</span>
+<span class="text-[10px] text-on-surface-variant font-body-sm">Teoría ensemble</span>
+</div>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 py-2 px-md rounded-lg hover:bg-surface-container-high transition-colors {% if active_page == 'bagging' %}text-secondary font-bold border-l-4 border-secondary pl-2 bg-surface-container-highest{% else %}text-on-surface-variant pl-3{% endif %}" href="{{ url_for('bagging') }}">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+<div class="flex flex-col leading-none">
+<span class="font-label-caps">Bagging Module</span>
+<span class="text-[10px] text-on-surface-variant font-body-sm">RF · Reduce varianza</span>
+</div>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 py-2 px-md rounded-lg hover:bg-surface-container-high transition-colors {% if active_page == 'boosting' %}text-secondary font-bold border-l-4 border-secondary pl-2 bg-surface-container-highest{% else %}text-on-surface-variant pl-3{% endif %}" href="{{ url_for('boosting') }}">
+<span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+<div class="flex flex-col leading-none">
+<span class="font-label-caps">Boosting Module</span>
+<span class="text-[10px] text-on-surface-variant font-body-sm">GB / AdaBoost · Reduce sesgo</span>
+</div>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 py-2 px-md rounded-lg hover:bg-surface-container-high transition-colors {% if active_page == 'comparative' %}text-secondary font-bold border-l-4 border-secondary pl-2 bg-surface-container-highest{% else %}text-on-surface-variant pl-3{% endif %}" href="{{ url_for('comparative') }}">
+<span class="material-symbols-outlined text-[20px]">compare_arrows</span>
+<div class="flex flex-col leading-none">
+<span class="font-label-caps">Comparative Lab</span>
+<span class="text-[10px] text-on-surface-variant font-body-sm">Tabla + tuning</span>
+</div>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 py-2 px-md rounded-lg hover:bg-surface-container-high transition-colors {% if active_page == 'demo' %}text-secondary font-bold border-l-4 border-secondary pl-2 bg-surface-container-highest{% else %}text-on-surface-variant pl-3{% endif %}" href="{{ url_for('demo') }}">
+<span class="material-symbols-outlined text-[20px]">play_circle</span>
+<div class="flex flex-col leading-none">
+<span class="font-label-caps">Demo Interactivo</span>
+<span class="text-[10px] text-on-surface-variant font-body-sm">Entrena en vivo</span>
+</div>
+</a>
+</li>
+</ul>
+<!-- Info Dataset Card -->
+<div class="mx-sm mt-4 p-3 bg-surface-container-highest border border-outline-variant rounded-lg">
+<p class="font-label-caps text-[10px] text-on-surface-variant mb-2">DATASET ACTIVO</p>
+<div class="space-y-1.5 font-body-sm text-xs">
+<div class="flex justify-between"><span class="text-on-surface-variant">Clasificación</span><span class="font-mono-data text-secondary">Heart Disease</span></div>
+<div class="text-[11px] text-on-surface-variant pl-1">→ Yes/No (80/20) · 20 feats</div>
+<div class="flex justify-between pt-1 border-t border-outline-variant"><span class="text-on-surface-variant">Regresión</span><span class="font-mono-data text-tertiary-container">Cholesterol</span></div>
+<div class="text-[11px] text-on-surface-variant pl-1">→ + alt. BMI · 19 feats</div>
+</div>
+</div>
+</nav>
+<div class="px-md mt-2 space-y-3 border-t border-outline-variant pt-3">
+<a href="{{ url_for('demo') }}" class="w-full bg-secondary text-on-secondary font-label-caps py-2 rounded flex items-center justify-center gap-2 hover:bg-on-secondary-container transition-colors text-xs">
+<span class="material-symbols-outlined text-[18px]">science</span>
+<span>Ejecutar Demo</span>
+</a>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 py-1.5 px-md rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors text-sm" href="{{ url_for('demo') }}">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+<span class="font-label-caps text-[11px]">Ajustes modelo</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 py-1.5 px-md rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors text-sm" href="https://scikit-learn.org/stable/modules/ensemble.html" target="_blank">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+<span class="font-label-caps text-[11px]">Docs sklearn</span>
+</a>
+</li>
+</ul>
+</div>
+</aside>
+
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 min-h-screen flex flex-col">
+<!-- TopNavBar (Desktop) -->
+<header class="hidden md:flex bg-surface border-b border-outline-variant fixed top-0 w-[calc(100%-16rem)] z-30 justify-between items-center px-lg py-sm transition-all duration-200 ease-in-out h-16">
+<div class="flex items-center">
+<h1 class="font-headline-md font-bold text-primary mr-8">ML Academy</h1>
+<nav class="hidden md:flex space-x-6">
+<a class="font-body-md text-on-surface-variant hover:text-secondary transition-colors py-2 {% if active_page == 'index' %}font-bold border-b-2 border-secondary{% endif %}" href="{{ url_for('index') }}">Overview</a>
+<a class="font-body-md text-on-surface-variant hover:text-secondary transition-colors py-2 {% if active_page == 'comparative' %}font-bold border-b-2 border-secondary{% endif %}" href="{{ url_for('comparative') }}">Analysis</a>
+<a class="font-body-md text-on-surface-variant hover:text-secondary transition-colors py-2" href="#">Resources</a>
+</nav>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-8 pr-4 py-1.5 border border-outline-variant rounded-full text-body-sm font-body-sm focus:outline-none focus:border-secondary bg-surface-container-low w-64" placeholder="Search..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:text-secondary transition-colors p-1" aria-label="School"><span class="material-symbols-outlined">school</span></button>
+<button class="text-on-surface-variant hover:text-secondary transition-colors p-1" aria-label="Help"><span class="material-symbols-outlined">help_outline</span></button>
+<img class="w-8 h-8 rounded-full border border-outline-variant object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXSSn9vWG54DVc1ck_mG0v3r28HSRF3MiQmF-JpxKF0VQOj2qllOKHbQhcgLb_j-uWwA_t-Y4Xjr8tcB4AS0o3QtMx0slSyjkTizTz_m4kGKkHVp_Iv_wIY8X93iYK3w-5xVWHmsYlk743zSX6aok_eybTSB7bq5u88igkD4nwqe3c-AaJ3KY0r_if4VqAYsfm38eAwDeiPx5IiplV3KY5Z-s_G94JQBGXTp-x3cTthv3sKvC75QmlTw" alt="Profile"/>
+</div>
+</header>
+
+<!-- Page Content -->
+<div class="flex-1 pt-16 md:pt-0">
+{% block content %}{% endblock %}
+</div>
+
+<!-- Footer -->
+<footer class="hidden md:block border-t border-outline-variant py-6 px-xl bg-surface-container-lowest">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center font-body-sm text-on-surface-variant">
+<p>© 2024 ML Academy - Laboratorio de Ensambles</p>
+<div class="space-x-4 mt-4 md:mt-0">
+<a class="hover:text-secondary transition-colors" href="#">Documentación Técnica</a>
+<a class="hover:text-secondary transition-colors" href="#">Referencias Académicas</a>
+<a class="hover:text-secondary transition-colors" href="#">Soporte</a>
+</div>
+</div>
+</footer>
+</main>
+</body>
+</html>

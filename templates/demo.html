@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% set active_page = 'demo' %}
+{% block title %}Demo Interactivo - ML Academy{% endblock %}
+
+{% block content %}
+<div class="p-4 md:p-xl max-w-container-max mx-auto space-y-xl">
+<header class="mb-lg">
+<h2 class="font-display-lg text-on-surface mb-2">Demo Interactivo — Bagging vs Boosting</h2>
+<p class="font-body-lg text-on-surface-variant max-w-3xl">Entrena en vivo con <strong>heart_disease.csv</strong> (10k muestras). Clasificación: Heart Disease Status — Regresión: Cholesterol Level. Ajusta hiperparámetros y compara.</p>
+</header>
+
+<!-- Controles -->
+<section class="bg-surface rounded-lg border border-outline-variant p-lg shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+<div>
+<label class="font-label-caps text-on-surface-variant">n_estimators</label>
+<input id="nEst" type="range" min="10" max="200" value="100" class="w-full accent-secondary">
+<div class="flex justify-between text-xs font-mono-data"><span>10</span><span id="nEstVal">100</span><span>200</span></div>
+</div>
+<div>
+<label class="font-label-caps text-on-surface-variant">learning_rate (Boosting)</label>
+<input id="lr" type="range" min="0.01" max="0.3" step="0.01" value="0.1" class="w-full accent-tertiary-container">
+<div class="text-xs font-mono-data text-center" id="lrVal">0.10</div>
+</div>
+<div>
+<label class="font-label-caps text-on-surface-variant">Target Regresión</label>
+<select id="targetReg" class="w-full border border-outline-variant rounded px-2 py-1.5 font-body-sm">
+<option>Cholesterol Level</option>
+<option>BMI</option>
+<option>Triglyceride Level</option>
+<option>Blood Pressure</option>
+</select>
+</div>
+<div class="flex gap-2">
+<button id="btnCls" class="flex-1 bg-secondary text-on-secondary font-label-caps px-4 py-2 rounded hover:bg-on-secondary-container">Clasificación</button>
+<button id="btnReg" class="flex-1 bg-tertiary-container text-tertiary font-label-caps px-4 py-2 rounded border border-outline-variant">Regresión</button>
+<button id="btnBoth" class="bg-surface-container-high border border-outline-variant px-4 py-2 rounded font-label-caps">Ambos</button>
+</div>
+</section>
+
+<!-- Summary -->
+<section id="summary" class="bg-surface-container-lowest border border-outline-variant rounded-lg p-lg hidden">
+<h3 class="font-label-caps text-on-surface mb-2">Resultados</h3>
+<pre id="metrics" class="font-mono-data text-xs bg-surface p-3 rounded border border-outline-variant overflow-auto max-h-64"></pre>
+<div id="plots" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"></div>
+</section>
+
+<div id="loading" class="hidden text-center font-body-sm text-secondary">Entrenando modelos... puede tardar 5-15s ⏳</div>
+
+<script>
+const nEst = document.getElementById('nEst');
+const nEstVal = document.getElementById('nEstVal');
+const lr = document.getElementById('lr');
+const lrVal = document.getElementById('lrVal');
+nEst.addEventListener('input', e=> nEstVal.textContent=e.target.value);
+lr.addEventListener('input', e=> lrVal.textContent=parseFloat(e.target.value).toFixed(2));
+
+function showLoading(v){ document.getElementById('loading').classList.toggle('hidden', !v); }
+function renderResult(data){
+  document.getElementById('summary').classList.remove('hidden');
+  document.getElementById('metrics').textContent = JSON.stringify(data, null, 2);
+  const plotsDiv = document.getElementById('plots');
+  plotsDiv.innerHTML='';
+  const allPlots = {...(data.plots||{}), ...(data.classification?.plots||{}), ...(data.regression?.plots||{})};
+  // si viene compare, tiene dos grupos
+  let toShow = allPlots;
+  if(data.classification || data.regression){
+    // mostrar ambos grupos
+    toShow={};
+    if(data.classification) Object.assign(toShow, data.classification.plots);
+    if(data.regression) Object.assign(toShow, data.regression.plots);
+  }
+  for(const [k,url] of Object.entries(toShow)){
+    const card=document.createElement('div');
+    card.className='bg-white border border-outline-variant rounded overflow-hidden';
+    card.innerHTML=`<div class='font-label-caps text-xs p-2 border-b bg-surface-container-low'>${k}</div><img src='${url}' class='w-full h-auto'>`;
+    plotsDiv.appendChild(card);
+  }
+}
+async function fetchJson(url){
+  showLoading(true);
+  try{
+    const r=await fetch(url);
+    const j=await r.json();
+    renderResult(j);
+  }catch(e){ alert(e); }
+  showLoading(false);
+}
+document.getElementById('btnCls').onclick=()=>{
+  fetchJson(`/api/train/classification?n_estimators=${nEst.value}&learning_rate=${lr.value}`);
+};
+document.getElementById('btnReg').onclick=()=>{
+  fetchJson(`/api/train/regression?target=${encodeURIComponent(document.getElementById('targetReg').value)}&n_estimators=${nEst.value}&learning_rate=${lr.value}`);
+};
+document.getElementById('btnBoth').onclick=()=>{
+  fetchJson(`/api/train/compare?n_estimators=${nEst.value}&learning_rate=${lr.value}`);
+};
+// auto-load summary
+fetch('/api/summary').then(r=>r.json()).then(j=>{
+  document.getElementById('summary').classList.remove('hidden');
+  document.getElementById('metrics').textContent = "Dataset: " + j.shape + " | Balance: " + JSON.stringify(j.class_balance) + " | Columnas: " + j.columns.slice(0,5).join(', ') + "...";
+});
+</script>
+</div>
+{% endblock %}

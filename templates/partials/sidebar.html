@@ -1,0 +1,62 @@
+<!-- Unified SideNavBar -->
+<aside class="hidden md:flex bg-surface-container-low border-r border-outline-variant fixed left-0 top-0 h-full flex-col pt-20 pb-lg w-64 z-40 shrink-0">
+  <div class="px-lg mb-8 flex flex-col items-center border-b border-outline-variant pb-md">
+    <img class="w-12 h-12 rounded-full mb-sm object-cover" 
+         src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXf9sKACaEAcFr7KSf98rwP-XLaCnvhFIyVtIpmQ_Y3yrQCwIJamAPDo_PW_CloLdMfrO_nDUtLVmBNIz2VnhqmvUmXUscEpth06awKU7CBw3pEYygtvZWIRG87Dki3So7LFl-gtUIkUG_ZTOwCEUlxlxxyfZI6w4EHqgyMrHgiyzlc4QfOHcMG7HF8KVR7S0ZuIIlsC12XV1N9pxGRI9gX7JJd5DADXoctjpfKqnkbCKLrQ-kjwh6pw"
+         alt="ML Ensemble Lab Logo"/>
+    <h1 class="font-headline-sm font-bold text-on-surface text-center">ML Ensemble Lab</h1>
+    <p class="text-on-surface-variant text-center font-body-sm">Academic Workbench</p>
+  </div>
+  <nav class="flex-1 overflow-y-auto">
+    <ul class="space-y-sm px-sm">
+      <li>
+        <a class="flex items-center space-x-md px-md py-sm rounded-lg text-on-surface-variant pl-3 hover:bg-surface-container-high transition-colors {% if active_page == 'index' %}text-secondary font-bold border-l-4 border-secondary pl-2 bg-surface-container-highest{% endif %}" 
+           href="{{ url_for('index') }}">
+          <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+          <span>Overview</span>
+        </a>
+      </li>
+      <li>
+        <a class="flex items-center space-x-md px-md py-sm rounded-lg text-on-surface-variant pl-3 hover:bg-surface-container-high transition-colors {% if active_page == 'bagging' %}text-secondary font-bold border-l-4 border-secondary pl-2 bg-surface-container-highest{% endif %}" 
+           href="{{ url_for('bagging') }}">
+          <span class="material-symbols-outlined" data-icon="layers">layers</span>
+          <span>Bagging Module</span>
+        </a>
+      </li>
+      <li>
+        <a class="flex items-center space-x-md px-md py-sm rounded-lg text-on-surface-variant pl-3 hover:bg-surface-container-high transition-colors {% if active_page == 'boosting' %}text-secondary font-bold border-l-4 border-secondary pl-2 bg-surface-container-highest{% endif %}" 
+           href="{{ url_for('boosting') }}">
+          <span class="material-symbols-outlined" data-icon="trending_up">cloud_upload</span>
+          <span>Boosting Module</span>
+        </a>
+      </li>
+      <li>
+        <a class="flex items-center space-x-md px-md py-sm rounded-lg text-on-surface-variant pl-3 hover:bg-surface-container-high transition-colors {% if active_page == 'comparative' %}text-secondary font-bold border-l-4 border-secondary pl-2 bg-surface-container-highest{% endif %}" 
+           href="{{ url_for('comparative') }}">
+          <span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+          <span>Comparative Lab</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="px-lg mt-auto pt-md border-t border-outline-variant">
+    <button class="w-full bg-secondary text-on-secondary py-sm rounded px-md font-body-sm hover:bg-on-secondary-container transition-colors mb-md flex items-center justify-center space-x-sm">
+      <span class="material-symbols-outlined text-[18px]">download</span>
+      <span>Download Report</span>
+    </button>
+    <ul class="space-y-sm">
+      <li>
+        <a class="flex items-center space-x-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors text-xs" href="#">
+          <span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+          <span>Settings</span>
+        </a>
+      </li>
+      <li>
+        <a class="flex items-center space-x-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors text-xs" href="#">
+          <span class="material-symbols-outlined text-[18px]" data-icon="menu_book">menu_book</span>
+          <span>Documentation</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</aside>

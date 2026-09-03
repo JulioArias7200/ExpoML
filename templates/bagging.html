@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% set active_page = 'bagging' %}
+{% block title %}Bagging Module - ML Academy{% endblock %}
+
+{% block content %}
+<main class="p-4 md:p-xl max-w-container-max mx-auto w-full">
+<!-- Hero Section -->
+<header class="mb-12">
+<h1 class="font-display-lg text-on-surface mb-4">Bagging (Bootstrap Aggregating)</h1>
+<p class="font-body-lg text-on-surface-variant max-w-3xl">
+El método de Bagging es una técnica fundamental en el aprendizaje por conjuntos (ensemble learning) diseñada para mejorar la estabilidad y precisión de los algoritmos de machine learning utilizados en la clasificación y regresión estadística. Al combinar múltiples modelos base independientes, reduce significativamente la varianza y ayuda a evitar el sobreajuste.
+</p>
+</header>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Diagram Area -->
+<section class="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-lg p-lg shadow-sm">
+<div class="flex items-center justify-between border-b border-outline-variant pb-3 mb-4">
+<h2 class="font-label-caps text-on-surface">Arquitectura del Proceso</h2>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" title="Información sobre el diagrama">info</span>
+</div>
+<div class="grid-paper-bg rounded w-full h-[400px] flex items-center justify-center overflow-hidden border border-[#E2E8F0]">
+<img alt="Diagrama científico de Bagging" class="max-w-full max-h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbs1s1evLXwBW0pndhJ5U_qwLQ2SOiB3OmsfpKCQUMpozkWfjAPNrofG-zB3W909k5gpBU_2k-I6NzzhD0nqk_GP1aZtfQtl8P7vWZqZWMi8EwhzbF8bG7M0usKxqcE3fKevMi4zS_7_hrX11Zzei8HPMvoMK82pBpqE0_OEMMRFcj0jeEP_8oe9kvHz8GSMQZO2edTKWc68SvzXzt2CtqaEN_HOO0JX7hulpIkndiVWBi5Cs2Lib4Sg"/>
+</div>
+<p class="font-body-sm text-on-surface-variant mt-4 italic text-center">
+Figura 1: Flujo de datos desde el conjunto original, a través de muestras bootstrap, entrenamiento paralelo y agregación final.
+</p>
+</section>
+
+<!-- Technical Details Side Panel -->
+<aside class="lg:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-lg shadow-sm border-l-4 border-l-[#0D9488]">
+<h3 class="font-label-caps text-on-surface border-b border-outline-variant pb-2 mb-3">Mecanismos Principales</h3>
+<div class="mb-4">
+<h4 class="font-headline-sm mb-1">Bootstrapping</h4>
+<p class="font-body-sm text-on-surface-variant">
+Muestreo estadístico con reemplazo. Se generan múltiples subconjuntos de datos a partir del dataset original. Cada modelo base se entrena con un subconjunto diferente, asegurando diversidad en el aprendizaje.
+</p>
+</div>
+<div>
+<h4 class="font-headline-sm mb-1">Aggregating</h4>
+<p class="font-body-sm text-on-surface-variant">
+Combinación de las predicciones de todos los modelos base. Para problemas de clasificación, se suele usar la "votación mayoritaria". Para regresión, se calcula el "promedio" de las predicciones.
+</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-lg shadow-sm">
+<h3 class="font-label-caps text-on-surface border-b border-outline-variant pb-2 mb-3">Modelo Destacado</h3>
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-[#0D9488] text-3xl">forest</span>
+<h4 class="font-headline-md">Random Forest</h4>
+</div>
+<p class="font-body-sm text-on-surface-variant">
+La aplicación más famosa de Bagging utilizando árboles de decisión como modelos base. Introduce aleatoriedad adicional al seleccionar un subconjunto aleatorio de características en cada división del nodo, descorrelacionando aún más los árboles.
+</p>
+</div>
+</aside>
+</div>
+
+<!-- Pros and Cons Section -->
+<section class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-lg shadow-sm">
+<h3 class="font-label-caps text-secondary flex items-center gap-2 border-b border-outline-variant pb-2 mb-4">
+<span class="material-symbols-outlined">check_circle</span> Ventajas
+</h3>
+<ul class="space-y-3 font-body-sm text-on-surface-variant">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-sm mt-0.5">add</span>
+Reduce la varianza sin aumentar el sesgo de manera significativa.
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-sm mt-0.5">add</span>
+Altamente paralelizable (los modelos base se pueden entrenar simultáneamente).
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-sm mt-0.5">add</span>
+Robusto frente a valores atípicos (outliers) y ruido en los datos.
+</li>
+</ul>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-lg shadow-sm">
+<h3 class="font-label-caps text-error flex items-center gap-2 border-b border-outline-variant pb-2 mb-4">
+<span class="material-symbols-outlined">cancel</span> Desventajas
+</h3>
+<ul class="space-y-3 font-body-sm text-on-surface-variant">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-error text-sm mt-0.5">remove</span>
+Pérdida de interpretabilidad comparado con un modelo simple (modelo "caja negra").
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-error text-sm mt-0.5">remove</span>
+Mayor coste computacional y tiempo de entrenamiento que un modelo individual.
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-error text-sm mt-0.5">remove</span>
+Menos efectivo si los modelos base están altamente correlacionados o son muy simples.
+</li>
+</ul>
+</div>
+</section>
+</main>
+{% endblock %}
