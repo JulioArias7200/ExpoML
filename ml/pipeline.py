@@ -7,6 +7,7 @@ Usa solo scikit-learn / pandas / matplotlib / seaborn
 """
 
 import os
+from functools import lru_cache
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -31,6 +32,7 @@ from sklearn.ensemble import (
     AdaBoostClassifier, BaggingClassifier
 )
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.utils.class_weight import compute_sample_weight
 
 # Rutas
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -48,9 +50,15 @@ CATEGORICAL_HINT = ["Gender","Exercise Habits","Smoking","Family Heart Disease",
 NUMERIC_HINT = ["Age","Blood Pressure","BMI","Sleep Hours","Triglyceride Level",
                 "Fasting Blood Sugar","CRP Level","Homocysteine Level","Cholesterol Level"]
 
+@lru_cache(maxsize=4)
+def _read_csv_cached(path):
+    # cachea la lectura del CSV en memoria: el demo reentrena varias veces
+    # por sesión y volver a leer 10k filas cada vez era el mayor costo de tiempo
+    return pd.read_csv(path)
+
 def load_data(path=DATA_PATH):
-    df = pd.read_csv(path)
-    return df
+    # devolvemos una copia para que nadie mute el dataframe cacheado
+    return _read_csv_cached(path).copy()
 
 def build_preprocessor(df, target_col, numeric_cols=None, categorical_cols=None):
     if numeric_cols is None or categorical_cols is None:
@@ -114,9 +122,20 @@ def train_classification(n_estimators=100, learning_rate=0.1, random_state=42):
     results = {}
     fitted = {}
 
+    # El dataset está desbalanceado (~80/20). RF ya balancea internamente vía
+    # class_weight="balanced", pero GradientBoosting/AdaBoost no aceptan ese
+    # parámetro, así que antes entrenaban "a ciegas" y colapsaban a predecir
+    # siempre la clase mayoritaria (precision/recall = 0 para "Yes"). Se
+    # replica el mismo balanceo con sample_weight para que la comparación
+    # Bagging vs Boosting sea justa.
+    sample_weight = compute_sample_weight(class_weight="balanced", y=y_train)
+
     for name, clf in models.items():
         pipe = Pipeline(steps=[("preprocessor", pre), ("classifier", clf)])
-        pipe.fit(X_train, y_train)
+        if name == "Bagging_RF":
+            pipe.fit(X_train, y_train)
+        else:
+            pipe.fit(X_train, y_train, classifier__sample_weight=sample_weight)
         y_pred = pipe.predict(X_test)
         y_proba = pipe.predict_proba(X_test)[:,1] if hasattr(pipe, "predict_proba") else None
         acc = accuracy_score(y_test, y_pred)
@@ -274,25 +293,37 @@ def plot_pr_curves(results, filename):
     return f"plots/{filename}"
 
 def plot_prob_distribution(results, filename):
-    """Distribución de probabilidades predichas por clase real - diagnostica AUC ~0.5"""
-    plt.figure(figsize=(5,4))
-    for name, res in results.items():
-        if res["y_proba"] is not None:
-            y_test = res["y_test"]
-            y_proba = res["y_proba"]
-            plt.figure(figsize=(5,4))
-            sns.kdeplot(x=y_proba[y_test==0], fill=True, alpha=0.35, label="Clase 0 (No)", color="#4575b4")
-            sns.kdeplot(x=y_proba[y_test==1], fill=True, alpha=0.35, label="Clase 1 (Yes)", color="#d73027")
-            plt.axvline(0.5, color="black", ls="--", lw=1, label="Umbral 0.5")
-            plt.xlabel("Probabilidad predicha de Clase 1")
-            plt.ylabel("Densidad")
-            plt.title(f"Distribución Probabilidades - {name}")
-            plt.legend(fontsize=9)
-            plt.tight_layout()
-            path = os.path.join(PLOT_DIR, filename.replace(".png", f"_{name}.png"))
-            plt.savefig(path, dpi=150); plt.close()
-            return f"plots/{filename.replace('.png', f'_{name}.png')}"
-    return None
+    """Distribución de probabilidades predichas por clase real - diagnostica AUC ~0.5.
+
+    Antes: el `return` estaba dentro del for, así que solo se generaba la
+    figura del primer modelo (Bagging_RF) y se abría una figura extra sin
+    cerrar en cada llamada (memory leak de matplotlib). Ahora se dibuja un
+    panel con una subgráfica por modelo, en una sola imagen.
+    """
+    names_with_proba = [n for n, r in results.items() if r.get("y_proba") is not None]
+    if not names_with_proba:
+        return None
+
+    fig, axes = plt.subplots(1, len(names_with_proba), figsize=(5*len(names_with_proba), 4), squeeze=False)
+    axes = axes[0]
+    for ax, name in zip(axes, names_with_proba):
+        res = results[name]
+        y_test = res["y_test"]
+        y_proba = res["y_proba"]
+        sns.kdeplot(x=y_proba[y_test==0], fill=True, alpha=0.35, label="Clase 0 (No)", color="#4575b4", ax=ax)
+        sns.kdeplot(x=y_proba[y_test==1], fill=True, alpha=0.35, label="Clase 1 (Yes)", color="#d73027", ax=ax)
+        ax.axvline(0.5, color="black", ls="--", lw=1, label="Umbral 0.5")
+        ax.set_xlabel("Probabilidad predicha de Clase 1")
+        ax.set_ylabel("Densidad")
+        ax.set_title(name, fontsize=10)
+        ax.legend(fontsize=8)
+
+    fig.suptitle("Distribución de probabilidades por modelo", fontsize=12)
+    fig.tight_layout()
+    path = os.path.join(PLOT_DIR, filename)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    return f"plots/{filename}"
 
 def plot_threshold_curves(results, filename):
     """Métricas vs umbral de decisión - elige corte óptimo"""

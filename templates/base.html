@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>{% block title %}ML Academy{% endblock %}</title>
+<title>{% block title %}ML Ensemble Lab{% endblock %}</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -114,7 +114,7 @@ tailwind.config = {
 <nav class="md:hidden bg-surface border-b border-outline-variant fixed top-0 w-full z-50 flex justify-between items-center px-lg py-sm max-w-container-max mx-auto transition-all duration-200 ease-in-out shadow-sm">
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-primary">science</span>
-<span class="font-headline-md font-bold text-primary">ML Academy</span>
+<span class="font-headline-md font-bold text-primary">ML Ensemble Lab</span>
 </div>
 <div class="flex gap-4 text-primary">
 <button class="cursor-pointer hover:text-secondary transition-colors" aria-label="School"><span class="material-symbols-outlined">school</span></button>
@@ -221,7 +221,7 @@ ML Ensemble Lab
 <!-- TopNavBar (Desktop) -->
 <header class="hidden md:flex bg-surface border-b border-outline-variant fixed top-0 w-[calc(100%-16rem)] z-30 justify-between items-center px-lg py-sm transition-all duration-200 ease-in-out h-16">
 <div class="flex items-center">
-<h1 class="font-headline-md font-bold text-primary mr-8">ML Academy</h1>
+<h1 class="font-headline-md font-bold text-primary mr-8">ML Ensemble Lab</h1>
 <nav class="hidden md:flex space-x-6">
 <a class="font-body-md text-on-surface-variant hover:text-secondary transition-colors py-2 {% if active_page == 'index' %}font-bold border-b-2 border-secondary{% endif %}" href="{{ url_for('index') }}">Overview</a>
 <a class="font-body-md text-on-surface-variant hover:text-secondary transition-colors py-2 {% if active_page == 'comparative' %}font-bold border-b-2 border-secondary{% endif %}" href="{{ url_for('comparative') }}">Analysis</a>
@@ -247,7 +247,7 @@ ML Ensemble Lab
 <!-- Footer -->
 <footer class="hidden md:block border-t border-outline-variant py-6 px-xl bg-surface-container-lowest">
 <div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center font-body-sm text-on-surface-variant">
-<p>© 2024 ML Academy - Laboratorio de Ensambles</p>
+<p>© 2024 ML Ensemble Lab — Laboratorio de Ensambles</p>
 <div class="space-x-4 mt-4 md:mt-0">
 <a class="hover:text-secondary transition-colors" href="#">Documentación Técnica</a>
 <a class="hover:text-secondary transition-colors" href="#">Referencias Académicas</a>
