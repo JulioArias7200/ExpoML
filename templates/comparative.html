@@ -3,186 +3,340 @@
 {% block title %}Comparative Lab - ML Academy{% endblock %}
 
 {% block content %}
-<main class="p-xl max-w-container-max mx-auto w-full space-y-xl">
-<header class="mb-lg">
-<h2 class="font-display-lg text-on-surface mb-2">Análisis Comparativo</h2>
-<p class="font-body-lg text-on-surface-variant max-w-3xl">Una evaluación detallada entre las arquitecturas de Bagging (Enfoque Paralelo) y Boosting (Enfoque Secuencial) para la reducción de error en modelos de ensamble.</p>
-</header>
-
-<!-- Comparison Table Card -->
-<section class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden">
-<div class="px-lg py-md border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
-<h3 class="font-label-caps text-on-surface">Enfoque Paralelo vs Secuencial</h3>
-<button class="text-on-surface-variant hover:text-secondary transition-colors" title="Información técnica">
-<span class="material-symbols-outlined text-[18px]">info</span>
-</button>
-</div>
-<div class="p-lg overflow-x-auto">
-<table class="w-full text-left border-collapse min-w-[800px]">
-<thead>
-<tr class="border-b border-outline-variant text-on-surface-variant font-label-caps">
-<th class="py-sm px-4 w-1/4">Característica</th>
-<th class="py-sm px-4 w-3/8 border-l-4 border-secondary-container">Bagging (Random Forest)</th>
-<th class="py-sm px-4 w-3/8 border-l-4 border-tertiary-container">Boosting (XGBoost, AdaBoost)</th>
-</tr>
-</thead>
-<tbody class="font-body-sm text-on-surface">
-<tr class="border-b border-surface-container hover:bg-surface-container-low transition-colors">
-<td class="py-3 px-4 font-medium">Arquitectura</td>
-<td class="py-3 px-4">Modelos independientes entrenados en paralelo.</td>
-<td class="py-3 px-4">Modelos dependientes entrenados secuencialmente.</td>
-</tr>
-<tr class="border-b border-surface-container hover:bg-surface-container-low transition-colors">
-<td class="py-3 px-4 font-medium">Objetivo Principal</td>
-<td class="py-3 px-4">Reducir la varianza (Overfitting).</td>
-<td class="py-3 px-4">Reducir el sesgo (Underfitting).</td>
-</tr>
-<tr class="border-b border-surface-container hover:bg-surface-container-low transition-colors">
-<td class="py-3 px-4 font-medium">Ponderación de Datos</td>
-<td class="py-3 px-4">Todos los datos de entrenamiento tienen igual peso.</td>
-<td class="py-3 px-4">Mayor peso a las instancias clasificadas incorrectamente.</td>
-</tr>
-<tr class="border-b border-surface-container hover:bg-surface-container-low transition-colors">
-<td class="py-3 px-4 font-medium">Sensibilidad a Outliers</td>
-<td class="py-3 px-4">Robusto frente a valores atípicos.</td>
-<td class="py-3 px-4">Altamente sensible a valores atípicos.</td>
-</tr>
-<tr class="hover:bg-surface-container-low transition-colors">
-<td class="py-3 px-4 font-medium">Complejidad Computacional</td>
-<td class="py-3 px-4">Fácilmente paralelizable, más rápido en general.</td>
-<td class="py-3 px-4">Secuencial, generalmente más lento de entrenar.</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-
-<!-- Bento Grid: Use Cases & Tuning -->
-<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
-<!-- Use Cases -->
-<section class="md:col-span-5 flex flex-col space-y-gutter">
-<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden flex-1">
-<div class="px-lg py-md border-b border-outline-variant bg-surface-container-low">
-<h3 class="font-label-caps text-on-surface">Casos de Uso Estratégicos</h3>
-</div>
-<div class="p-lg space-y-6">
-<div class="flex items-start">
-<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center mr-4 flex-shrink-0">
-<span class="material-symbols-outlined text-on-secondary-container">scatter_plot</span>
-</div>
-<div>
-<h4 class="font-headline-sm text-on-surface mb-1">Alta Varianza (Bagging)</h4>
-<p class="font-body-sm text-on-surface-variant">Utilice cuando el modelo base (ej. Árboles profundos) es propenso al sobreajuste. Ideal para datos ruidosos donde la estabilidad es primordial.</p>
-</div>
-</div>
-<div class="flex items-start">
-<div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center mr-4 flex-shrink-0">
-<span class="material-symbols-outlined text-on-tertiary-fixed">trending_down</span>
-</div>
-<div>
-<h4 class="font-headline-sm text-on-surface mb-1">Alto Sesgo (Boosting)</h4>
-<p class="font-body-sm text-on-surface-variant">Utilice cuando el modelo base es demasiado simple (ej. Stumps). Excelente para maximizar la precisión predictiva si los datos están limpios.</p>
-</div>
-</div>
-</div>
-</div>
-</section>
-
-<!-- Parameter Tuning (funcional, entrena de verdad contra la API) -->
-<section class="md:col-span-7 bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden flex flex-col">
-<div class="px-lg py-md border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
-<h3 class="font-label-caps text-on-surface">Panel de Afinación (Tuning)</h3>
-<span id="tuningStatus" class="font-mono-data text-on-surface-variant">Listo</span>
-</div>
-<div class="p-lg flex-1 grid-paper relative flex flex-col">
-<!-- Resultado real (reemplaza al mockup estático) -->
-<div id="tuningResultBox" class="min-h-[12rem] mb-6 border border-outline-variant bg-surface-bright rounded flex items-center justify-center relative overflow-hidden">
-<p class="font-body-sm text-on-surface-variant p-4 text-center">Ajusta los parámetros y pulsa "Ejecutar Simulación" para entrenar Bagging (RF) vs Boosting (GB) con el dataset real.</p>
-</div>
-
-<!-- Controls -->
-<div class="space-y-6 mt-auto bg-surface/90 p-4 rounded border border-outline-variant backdrop-blur-sm">
-<div>
-<div class="flex justify-between mb-1">
-<label class="font-label-caps text-on-surface">Número de Estimadores (n_estimators)</label>
-<span id="cmpNEstVal" class="font-mono-data text-secondary">100</span>
-</div>
-<input id="cmpNEst" class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" max="300" min="10" type="range" value="100"/>
-<div class="flex justify-between mt-1 text-xs text-outline font-mono-data">
-<span>10</span>
-<span>300</span>
-</div>
-</div>
-<div>
-<div class="flex justify-between mb-1">
-<label class="font-label-caps text-on-surface">Tasa de Aprendizaje (learning_rate) - Solo Boosting</label>
-<span id="cmpLrVal" class="font-mono-data text-tertiary-container">0.10</span>
-</div>
-<input id="cmpLr" class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-tertiary-container" max="1" min="0.01" step="0.01" type="range" value="0.1"/>
-</div>
-<div class="flex justify-end pt-2 border-t border-outline-variant">
-<button id="cmpRunBtn" class="bg-secondary text-on-secondary font-label-caps px-6 py-2 rounded hover:bg-on-secondary-container transition-colors">
-Ejecutar Simulación
-</button>
-</div>
-</div>
-</div>
-</section>
-</div>
-</main>
-<script>
-(function(){
-  const demoUrl = "{{ url_for('demo') }}";
-  const nEst = document.getElementById('cmpNEst');
-  const nEstVal = document.getElementById('cmpNEstVal');
-  const lr = document.getElementById('cmpLr');
-  const lrVal = document.getElementById('cmpLrVal');
-  const status = document.getElementById('tuningStatus');
-  const box = document.getElementById('tuningResultBox');
-  const btn = document.getElementById('cmpRunBtn');
-
-  nEst.addEventListener('input', e => nEstVal.textContent = e.target.value);
-  lr.addEventListener('input', e => lrVal.textContent = parseFloat(e.target.value).toFixed(2));
-
-  function metricRow(label, value) {
-    return `<div class="flex justify-between border-b border-outline-variant py-1"><span class="text-on-surface-variant">${label}</span><span class="font-mono-data">${value}</span></div>`;
-  }
-
-  btn.addEventListener('click', async () => {
-    btn.disabled = true;
-    status.textContent = 'Entrenando...';
-    box.innerHTML = '<p class="font-body-sm text-on-surface-variant p-4 text-center">Entrenando modelos con el dataset real (~5-15s)...</p>';
-    try {
-      const url = `/api/train/compare?n_estimators=${nEst.value}&learning_rate=${lr.value}`;
-      const r = await fetch(url);
-      const data = await r.json();
-      if (data.error) throw new Error(data.error);
-      const cls = data.classification.metrics;
-      const reg = data.regression.metrics;
-      box.innerHTML = `
-        <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-body-sm">
-          <div>
-            <p class="font-label-caps text-on-surface-variant mb-1">Clasificación (Heart Disease) · ROC AUC</p>
-            ${metricRow('Bagging (RF)', cls.Bagging_RF.roc_auc.toFixed(3))}
-            ${metricRow('Boosting (GB)', cls.Boosting_GB.roc_auc.toFixed(3))}
-            ${metricRow('Boosting (AdaBoost)', cls.Boosting_Ada.roc_auc.toFixed(3))}
-          </div>
-          <div>
-            <p class="font-label-caps text-on-surface-variant mb-1">Regresión (Cholesterol) · R²</p>
-            ${metricRow('Bagging (RF)', reg.Bagging_RF.r2.toFixed(3))}
-            ${metricRow('Boosting (GB)', reg.Boosting_GB.r2.toFixed(3))}
-          </div>
+<main class="p-4 md:p-xl max-w-container-max mx-auto space-y-8">
+    <!-- Header -->
+    <header>
+        <div class="flex items-center gap-3 mb-3">
+            <span class="material-symbols-outlined text-4xl text-secondary">compare_arrows</span>
+            <h1 class="font-display-lg text-on-surface">Análisis Comparativo</h1>
         </div>
-        <p class="col-span-2 px-4 pb-3 text-[11px] text-on-surface-variant">Ver gráficas completas en la <a class="underline hover:text-secondary" href="${demoUrl}">Demo Interactiva</a>.</p>
-      `;
-      status.textContent = 'Listo';
-    } catch (e) {
-      box.innerHTML = `<p class="font-body-sm text-error p-4 text-center">Error al entrenar: ${e.message}</p>`;
-      status.textContent = 'Error';
-    } finally {
-      btn.disabled = false;
-    }
-  });
-})();
-</script>
+        <div class="max-w-3xl bg-surface-container-low rounded-xl p-5 border-l-4 border-secondary">
+            <p class="font-body-lg text-on-surface-variant leading-relaxed">
+                Una evaluación detallada entre <strong class="text-secondary">Bagging</strong> (enfoque paralelo) y 
+                <strong class="text-[#F97316]">Boosting</strong> (enfoque secuencial) para la reducción de error 
+                en modelos de ensemble. Esta comparación abarca <span class="font-medium">arquitectura, objetivos, 
+                sensibilidad a datos y complejidad computacional</span>.
+            </p>
+        </div>
+    </header>
+
+    <!-- Tabla de Comparación -->
+    <section class="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant bg-surface-container-low">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-secondary">table_rows</span>
+                <h3 class="font-label-caps text-on-surface tracking-wider">Enfoque Paralelo vs Secuencial</h3>
+            </div>
+            <span class="text-[10px] font-mono-data text-on-surface-variant/60">Bagging · Boosting</span>
+        </div>
+        <div class="p-6 overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[700px]">
+                <thead>
+                    <tr class="border-b-2 border-outline-variant">
+                        <th class="py-3 px-4 w-1/4 font-label-caps text-on-surface-variant tracking-wider">Característica</th>
+                        <th class="py-3 px-4 w-3/8 border-l-4 border-secondary/60 bg-secondary/5 font-label-caps text-secondary tracking-wider">
+                            <span class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">layers</span>
+                                Bagging (Random Forest)
+                            </span>
+                        </th>
+                        <th class="py-3 px-4 w-3/8 border-l-4 border-[#F97316]/60 bg-[#F97316]/5 font-label-caps text-[#F97316] tracking-wider">
+                            <span class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">trending_up</span>
+                                Boosting (XGBoost, AdaBoost)
+                            </span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60">
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-medium text-on-surface">Arquitectura</td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-emerald-500 text-[16px]">parallel</span>
+                                Modelos <strong>independientes</strong> entrenados en paralelo
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[#F97316] text-[16px]">sequential</span>
+                                Modelos <strong>dependientes</strong> entrenados secuencialmente
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-medium text-on-surface">Objetivo Principal</td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs font-medium">Reducción de varianza</span>
+                            <span class="block text-xs text-on-surface-variant/60 mt-0.5">Previene sobreajuste</span>
+                        </td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="bg-[#F97316]/20 text-[#F97316] px-2 py-0.5 rounded text-xs font-medium">Reducción de sesgo</span>
+                            <span class="block text-xs text-on-surface-variant/60 mt-0.5">Aumenta precisión</span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-medium text-on-surface">Ponderación de Datos</td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[16px] align-middle text-on-surface-variant">equalizer</span>
+                            Pesos <strong>uniformes</strong> en todo el conjunto
+                        </td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[16px] align-middle text-[#F97316]">weight</span>
+                            Mayor peso a <strong>instancias mal clasificadas</strong>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-medium text-on-surface">Sensibilidad a Outliers</td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[16px] align-middle text-emerald-500">shield</span>
+                            <strong>Robusto</strong> — los outliers se diluyen en múltiples muestras
+                        </td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[16px] align-middle text-rose-500">warning</span>
+                            <strong>Altamente sensible</strong> — puede sobreajustarse a outliers
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-medium text-on-surface">Complejidad Computacional</td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[16px] align-middle text-emerald-500">speed</span>
+                            <strong>Paralelizable</strong> — entrenamiento rápido en múltiples núcleos
+                        </td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[16px] align-middle text-[#F97316]">hourglass</span>
+                            <strong>Secuencial</strong> — generalmente más lento de entrenar
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-surface-container-low transition-colors bg-surface-container-low/30">
+                        <td class="py-3.5 px-4 font-medium text-on-surface">Mejor Escenario</td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-xs">Alta varianza</span>
+                            <span class="block text-xs text-on-surface-variant/60 mt-0.5">Datos ruidosos · Modelos base complejos</span>
+                        </td>
+                        <td class="py-3.5 px-4 font-body-sm text-on-surface-variant">
+                            <span class="bg-[#F97316]/10 border border-[#F97316]/30 px-2 py-0.5 rounded text-xs">Alto sesgo</span>
+                            <span class="block text-xs text-on-surface-variant/60 mt-0.5">Datos limpios · Modelos base simples</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Bento Grid: Use Cases + Tuning -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Casos de Uso -->
+        <section class="lg:col-span-5 flex flex-col gap-6">
+            <div class="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow flex-1">
+                <div class="px-5 py-4 border-b border-outline-variant bg-surface-container-low">
+                    <h3 class="font-label-caps text-on-surface tracking-wider flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary text-[20px]">lightbulb</span>
+                        Casos de Uso Estratégicos
+                    </h3>
+                </div>
+                <div class="p-5 space-y-5">
+                    <div class="flex items-start gap-4 p-4 bg-secondary/5 rounded-xl border border-secondary/20">
+                        <div class="w-10 h-10 rounded-full bg-secondary/15 flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-secondary">scatter_plot</span>
+                        </div>
+                        <div>
+                            <h4 class="font-headline-sm text-secondary mb-1">Alta Varianza → Bagging</h4>
+                            <p class="font-body-sm text-on-surface-variant leading-relaxed">
+                                Cuando el modelo base (ej. árboles profundos) es <span class="font-medium">propenso al sobreajuste</span>. 
+                                Ideal para datos ruidosos donde la <span class="font-medium">estabilidad</span> es primordial.
+                            </p>
+                            <div class="mt-2 flex flex-wrap gap-1.5">
+                                <span class="text-[9px] font-mono-data bg-surface-container-high px-2 py-0.5 rounded-full border border-outline-variant">Random Forest</span>
+                                <span class="text-[9px] font-mono-data bg-surface-container-high px-2 py-0.5 rounded-full border border-outline-variant">Extra Trees</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 p-4 bg-[#F97316]/5 rounded-xl border border-[#F97316]/20">
+                        <div class="w-10 h-10 rounded-full bg-[#F97316]/15 flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-[#F97316]">trending_down</span>
+                        </div>
+                        <div>
+                            <h4 class="font-headline-sm text-[#F97316] mb-1">Alto Sesgo → Boosting</h4>
+                            <p class="font-body-sm text-on-surface-variant leading-relaxed">
+                                Cuando el modelo base es <span class="font-medium">demasiado simple</span> (ej. stumps). 
+                                Excelente para <span class="font-medium">maximizar precisión</span> si los datos están limpios.
+                            </p>
+                            <div class="mt-2 flex flex-wrap gap-1.5">
+                                <span class="text-[9px] font-mono-data bg-surface-container-high px-2 py-0.5 rounded-full border border-outline-variant">XGBoost</span>
+                                <span class="text-[9px] font-mono-data bg-surface-container-high px-2 py-0.5 rounded-full border border-outline-variant">LightGBM</span>
+                                <span class="text-[9px] font-mono-data bg-surface-container-high px-2 py-0.5 rounded-full border border-outline-variant">AdaBoost</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-[10px] font-mono-data text-on-surface-variant/60 p-3 bg-surface-container-low rounded-lg border border-outline-variant/50">
+                        <span class="material-symbols-outlined text-[14px] align-middle">info</span>
+                        La elección entre Bagging y Boosting depende del <span class="font-medium">trade-off sesgo-varianza</span> 
+                        y de las características del dataset.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel de Tuning -->
+        <section class="lg:col-span-7 bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant bg-surface-container-low">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-secondary">tune</span>
+                    <h3 class="font-label-caps text-on-surface tracking-wider">Panel de Afinación (Tuning)</h3>
+                </div>
+                <span id="tuningStatus" class="font-mono-data text-on-surface-variant text-xs bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant">● Listo</span>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+                <!-- Resultado real -->
+                <div id="tuningResultBox" class="min-h-[14rem] mb-6 border border-outline-variant bg-surface-bright rounded-xl flex items-center justify-center relative overflow-hidden">
+                    <p class="font-body-sm text-on-surface-variant p-6 text-center leading-relaxed">
+                        <span class="material-symbols-outlined text-[48px] block mx-auto mb-3 text-on-surface-variant/30">science</span>
+                        Ajusta los parámetros y pulsa <span class="font-medium">"Ejecutar Simulación"</span> para entrenar 
+                        <span class="text-secondary font-medium">Bagging (RF)</span> vs 
+                        <span class="text-[#F97316] font-medium">Boosting (GB)</span> con el dataset real.
+                    </p>
+                </div>
+
+                <!-- Controles -->
+                <div class="space-y-5 mt-auto bg-surface-container-low p-5 rounded-xl border border-outline-variant">
+                    <div>
+                        <div class="flex justify-between mb-1.5">
+                            <label class="font-label-caps text-on-surface text-xs tracking-wider">Número de Estimadores</label>
+                            <span id="cmpNEstVal" class="font-mono-data text-secondary text-sm font-medium">100</span>
+                        </div>
+                        <input id="cmpNEst" class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" 
+                               max="300" min="10" type="range" value="100"/>
+                        <div class="flex justify-between mt-1 text-[10px] text-outline font-mono-data">
+                            <span>10</span>
+                            <span>300</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1.5">
+                            <label class="font-label-caps text-on-surface text-xs tracking-wider">Tasa de Aprendizaje <span class="text-[#F97316]">(Boosting)</span></label>
+                            <span id="cmpLrVal" class="font-mono-data text-[#F97316] text-sm font-medium">0.10</span>
+                        </div>
+                        <input id="cmpLr" class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-[#F97316]" 
+                               max="1" min="0.01" step="0.01" type="range" value="0.1"/>
+                    </div>
+                    <div class="flex justify-end pt-3 border-t border-outline-variant">
+                        <button id="cmpRunBtn" class="bg-secondary text-on-secondary font-label-caps px-8 py-2.5 rounded-xl hover:bg-on-secondary-container transition-all flex items-center gap-2 text-sm shadow-sm hover:shadow-md">
+                            <span class="material-symbols-outlined text-[18px]">play_arrow</span>
+                            Ejecutar Simulación
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Explicación Profesional Comparativa -->
+    <section class="bg-gradient-to-r from-secondary/5 via-[#F97316]/5 to-transparent rounded-xl border border-secondary/20 p-6">
+        <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-secondary text-2xl">compare</span>
+            </div>
+            <div>
+                <h3 class="font-headline-sm text-secondary mb-2">Fundamento Comparativo: Bagging vs Boosting</h3>
+                <p class="font-body-sm text-on-surface-variant leading-relaxed max-w-5xl">
+                    <strong class="text-secondary">Bagging</strong> y <strong class="text-[#F97316]">Boosting</strong> representan dos paradigmas 
+                    fundamentales en el aprendizaje por conjuntos. Mientras que <span class="font-medium">Bagging</span> busca 
+                    <span class="bg-secondary/10 px-2 py-0.5 rounded font-medium">reducir la varianza</span> mediante el promedio de 
+                    modelos entrenados <span class="font-medium">paralelamente</span> en diferentes muestras bootstrap, 
+                    <span class="font-medium">Boosting</span> se enfoca en <span class="bg-[#F97316]/10 px-2 py-0.5 rounded font-medium">reducir el sesgo</span> 
+                    mediante la combinación <span class="font-medium">secuencial</span> de modelos que corrigen errores previos.
+                    Esta diferencia fundamental determina su <span class="font-medium">comportamiento en diferentes escenarios</span>: 
+                    Bagging es más <span class="font-medium">robusto y estable</span> con datos ruidosos, mientras que Boosting 
+                    ofrece <span class="font-medium">mayor precisión</span> en datos limpios y complejos. La elección entre ambos 
+                    es un <span class="font-medium">trade-off clásico</span> en el diseño de sistemas de machine learning, 
+                    que depende del <span class="font-medium">balance sesgo-varianza</span> y de los recursos computacionales disponibles.
+                </p>
+                <div class="mt-3 flex flex-wrap gap-3">
+                    <span class="text-[10px] font-mono-data bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant">Bias-Variance Trade-off</span>
+                    <span class="text-[10px] font-mono-data bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant">Parallel vs Sequential</span>
+                    <span class="text-[10px] font-mono-data bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant">Ensemble Learning</span>
+                    <span class="text-[10px] font-mono-data bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant">Model Optimization</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        (function() {
+            const demoUrl = "{{ url_for('demo') }}";
+            const nEst = document.getElementById('cmpNEst');
+            const nEstVal = document.getElementById('cmpNEstVal');
+            const lr = document.getElementById('cmpLr');
+            const lrVal = document.getElementById('cmpLrVal');
+            const status = document.getElementById('tuningStatus');
+            const box = document.getElementById('tuningResultBox');
+            const btn = document.getElementById('cmpRunBtn');
+
+            nEst.addEventListener('input', e => nEstVal.textContent = e.target.value);
+            lr.addEventListener('input', e => lrVal.textContent = parseFloat(e.target.value).toFixed(2));
+
+            function metricRow(label, value, color = 'text-on-surface') {
+                return `<div class="flex justify-between border-b border-outline-variant/40 py-1.5 text-sm">
+                            <span class="text-on-surface-variant">${label}</span>
+                            <span class="font-mono-data font-medium ${color}">${value}</span>
+                        </div>`;
+            }
+
+            btn.addEventListener('click', async () => {
+                btn.disabled = true;
+                status.textContent = '● Entrenando...';
+                status.className = 'font-mono-data text-xs bg-[#F97316]/10 text-[#F97316] px-3 py-1 rounded-full border border-[#F97316]/30';
+                box.innerHTML = `<div class="flex flex-col items-center justify-center p-6">
+                                    <span class="material-symbols-outlined text-4xl text-[#F97316] animate-spin">progress_activity</span>
+                                    <p class="font-body-sm text-on-surface-variant mt-3">Entrenando modelos con el dataset real...</p>
+                                    <p class="text-[10px] font-mono-data text-on-surface-variant/60">~5-15 segundos</p>
+                                </div>`;
+
+                try {
+                    const url = `/api/train/compare?n_estimators=${nEst.value}&learning_rate=${lr.value}`;
+                    const r = await fetch(url);
+                    const data = await r.json();
+                    if (data.error) throw new Error(data.error);
+
+                    const cls = data.classification.metrics;
+                    const reg = data.regression.metrics;
+
+                    box.innerHTML = `
+                        <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant/50">
+                                <p class="font-label-caps text-on-surface-variant mb-3 tracking-wider text-[10px]">🔬 Clasificación · ROC AUC</p>
+                                ${metricRow('Bagging (RF)', cls.Bagging_RF.roc_auc.toFixed(3), 'text-secondary font-bold')}
+                                ${metricRow('Boosting (GB)', cls.Boosting_GB.roc_auc.toFixed(3), 'text-[#F97316] font-bold')}
+                                ${metricRow('Boosting (AdaBoost)', cls.Boosting_Ada.roc_auc.toFixed(3), 'text-[#F97316]')}
+                            </div>
+                            <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant/50">
+                                <p class="font-label-caps text-on-surface-variant mb-3 tracking-wider text-[10px]">📈 Regresión · R²</p>
+                                ${metricRow('Bagging (RF)', reg.Bagging_RF.r2.toFixed(3), 'text-secondary font-bold')}
+                                ${metricRow('Boosting (GB)', reg.Boosting_GB.r2.toFixed(3), 'text-[#F97316] font-bold')}
+                            </div>
+                            <div class="md:col-span-2 text-center text-[11px] text-on-surface-variant bg-surface-container-low rounded-lg p-2 border border-outline-variant/30">
+                                <span class="material-symbols-outlined text-[16px] align-middle">insights</span>
+                                Ver gráficas completas en la <a class="underline hover:text-secondary font-medium" href="${demoUrl}">Demo Interactiva</a>.
+                            </div>
+                        </div>
+                    `;
+                    status.textContent = '● Completado';
+                    status.className = 'font-mono-data text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200';
+                } catch (e) {
+                    box.innerHTML = `
+                        <div class="flex flex-col items-center p-6">
+                            <span class="material-symbols-outlined text-4xl text-rose-500">error</span>
+                            <p class="font-body-sm text-error mt-3 text-center">Error: ${e.message}</p>
+                        </div>
+                    `;
+                    status.textContent = '● Error';
+                    status.className = 'font-mono-data text-xs bg-rose-50 text-rose-600 px-3 py-1 rounded-full border border-rose-200';
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+        })();
+    </script>
+</main>
 {% endblock %}
