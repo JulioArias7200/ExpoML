@@ -88,22 +88,16 @@
 </div>
 </section>
 
-<!-- Parameter Tuning Mockup -->
+<!-- Parameter Tuning (funcional, entrena de verdad contra la API) -->
 <section class="md:col-span-7 bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden flex flex-col">
 <div class="px-lg py-md border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
 <h3 class="font-label-caps text-on-surface">Panel de Afinación (Tuning)</h3>
-<span class="font-mono-data text-secondary">Interactive_Mode: ON</span>
+<span id="tuningStatus" class="font-mono-data text-on-surface-variant">Listo</span>
 </div>
 <div class="p-lg flex-1 grid-paper relative flex flex-col">
-<!-- Abstract Visualization Area -->
-<div class="h-48 mb-6 border border-outline-variant bg-surface-bright rounded flex items-center justify-center relative overflow-hidden">
-<span class="font-label-caps text-on-surface-variant absolute top-2 left-2 z-10">Error de Validación Mínimo</span>
-<div class="absolute bottom-0 left-0 w-full h-full p-4 flex items-end">
-<svg class="w-full h-full text-secondary opacity-70" preserveAspectRatio="none" viewBox="0 0 100 100">
-<path d="M0,80 Q25,20 50,40 T100,10" fill="none" stroke="currentColor" stroke-width="2"></path>
-<path class="opacity-50" d="M0,90 Q30,50 60,60 T100,20" fill="none" stroke="#271901" stroke-width="2"></path>
-</svg>
-</div>
+<!-- Resultado real (reemplaza al mockup estático) -->
+<div id="tuningResultBox" class="min-h-[12rem] mb-6 border border-outline-variant bg-surface-bright rounded flex items-center justify-center relative overflow-hidden">
+<p class="font-body-sm text-on-surface-variant p-4 text-center">Ajusta los parámetros y pulsa "Ejecutar Simulación" para entrenar Bagging (RF) vs Boosting (GB) con el dataset real.</p>
 </div>
 
 <!-- Controls -->
@@ -111,23 +105,23 @@
 <div>
 <div class="flex justify-between mb-1">
 <label class="font-label-caps text-on-surface">Número de Estimadores (n_estimators)</label>
-<span class="font-mono-data text-secondary">100</span>
+<span id="cmpNEstVal" class="font-mono-data text-secondary">100</span>
 </div>
-<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" max="500" min="10" type="range" value="100"/>
+<input id="cmpNEst" class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" max="300" min="10" type="range" value="100"/>
 <div class="flex justify-between mt-1 text-xs text-outline font-mono-data">
 <span>10</span>
-<span>500</span>
+<span>300</span>
 </div>
 </div>
 <div>
 <div class="flex justify-between mb-1">
 <label class="font-label-caps text-on-surface">Tasa de Aprendizaje (learning_rate) - Solo Boosting</label>
-<span class="font-mono-data text-tertiary-container">0.1</span>
+<span id="cmpLrVal" class="font-mono-data text-tertiary-container">0.10</span>
 </div>
-<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-tertiary-container" max="1" min="0.01" step="0.01" type="range" value="0.1"/>
+<input id="cmpLr" class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-tertiary-container" max="1" min="0.01" step="0.01" type="range" value="0.1"/>
 </div>
 <div class="flex justify-end pt-2 border-t border-outline-variant">
-<button class="bg-secondary text-on-secondary font-label-caps px-6 py-2 rounded hover:bg-on-secondary-container transition-colors">
+<button id="cmpRunBtn" class="bg-secondary text-on-secondary font-label-caps px-6 py-2 rounded hover:bg-on-secondary-container transition-colors">
 Ejecutar Simulación
 </button>
 </div>
@@ -136,4 +130,59 @@ Ejecutar Simulación
 </section>
 </div>
 </main>
+<script>
+(function(){
+  const demoUrl = "{{ url_for('demo') }}";
+  const nEst = document.getElementById('cmpNEst');
+  const nEstVal = document.getElementById('cmpNEstVal');
+  const lr = document.getElementById('cmpLr');
+  const lrVal = document.getElementById('cmpLrVal');
+  const status = document.getElementById('tuningStatus');
+  const box = document.getElementById('tuningResultBox');
+  const btn = document.getElementById('cmpRunBtn');
+
+  nEst.addEventListener('input', e => nEstVal.textContent = e.target.value);
+  lr.addEventListener('input', e => lrVal.textContent = parseFloat(e.target.value).toFixed(2));
+
+  function metricRow(label, value) {
+    return `<div class="flex justify-between border-b border-outline-variant py-1"><span class="text-on-surface-variant">${label}</span><span class="font-mono-data">${value}</span></div>`;
+  }
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    status.textContent = 'Entrenando...';
+    box.innerHTML = '<p class="font-body-sm text-on-surface-variant p-4 text-center">Entrenando modelos con el dataset real (~5-15s)...</p>';
+    try {
+      const url = `/api/train/compare?n_estimators=${nEst.value}&learning_rate=${lr.value}`;
+      const r = await fetch(url);
+      const data = await r.json();
+      if (data.error) throw new Error(data.error);
+      const cls = data.classification.metrics;
+      const reg = data.regression.metrics;
+      box.innerHTML = `
+        <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-body-sm">
+          <div>
+            <p class="font-label-caps text-on-surface-variant mb-1">Clasificación (Heart Disease) · ROC AUC</p>
+            ${metricRow('Bagging (RF)', cls.Bagging_RF.roc_auc.toFixed(3))}
+            ${metricRow('Boosting (GB)', cls.Boosting_GB.roc_auc.toFixed(3))}
+            ${metricRow('Boosting (AdaBoost)', cls.Boosting_Ada.roc_auc.toFixed(3))}
+          </div>
+          <div>
+            <p class="font-label-caps text-on-surface-variant mb-1">Regresión (Cholesterol) · R²</p>
+            ${metricRow('Bagging (RF)', reg.Bagging_RF.r2.toFixed(3))}
+            ${metricRow('Boosting (GB)', reg.Boosting_GB.r2.toFixed(3))}
+          </div>
+        </div>
+        <p class="col-span-2 px-4 pb-3 text-[11px] text-on-surface-variant">Ver gráficas completas en la <a class="underline hover:text-secondary" href="${demoUrl}">Demo Interactiva</a>.</p>
+      `;
+      status.textContent = 'Listo';
+    } catch (e) {
+      box.innerHTML = `<p class="font-body-sm text-error p-4 text-center">Error al entrenar: ${e.message}</p>`;
+      status.textContent = 'Error';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
 {% endblock %}
