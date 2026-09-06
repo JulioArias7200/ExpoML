@@ -3,93 +3,227 @@
 {% block title %}Boosting Module - ML Academy{% endblock %}
 
 {% block content %}
-<div class="p-4 md:p-xl max-w-container-max mx-auto space-y-lg">
-<!-- Hero Section -->
-<section class="bg-surface rounded-lg border border-outline-variant p-lg shadow-sm">
-<div class="max-w-3xl">
-<h2 class="font-display-lg text-on-surface mb-sm">Boosting: Sequential Learning</h2>
-<p class="font-body-lg text-on-surface-variant mb-md">
-A diferencia del Bagging, que entrena modelos de forma independiente, el <strong>Boosting</strong> es un proceso secuencial. Cada modelo base se entrena para corregir los errores cometidos por su predecesor, creando un modelo final fuerte a partir de múltiples aprendices débiles.
-</p>
-</div>
-</section>
+<main class="p-4 md:p-xl max-w-container-max mx-auto space-y-8">
+    <!-- Hero Section -->
+    <header class="relative">
+        <div class="flex items-center gap-3 mb-3">
+            <span class="material-symbols-outlined text-4xl text-[#F97316]">trending_up</span>
+            <h1 class="font-display-lg text-on-surface">Boosting <span class="text-on-surface-variant text-2xl font-normal">(Sequential Learning)</span></h1>
+        </div>
+        <div class="max-w-4xl bg-[#F97316]/5 border-l-4 border-[#F97316] p-5 rounded-r-xl">
+            <p class="font-body-lg text-on-surface leading-relaxed">
+                <strong class="text-[#F97316]">Boosting</strong> es un método secuencial de ensemble learning donde 
+                <span class="bg-[#F97316]/10 px-2 py-0.5 rounded font-medium">cada nuevo modelo corrige los errores del anterior</span>. 
+                A diferencia del Bagging (paralelo), Boosting construye una cadena de aprendices débiles que, combinados, 
+                forman un <span class="font-medium">predictor fuerte</span> capaz de reducir significativamente el sesgo.
+            </p>
+        </div>
+    </header>
 
-<!-- Diagram Area -->
-<section class="bg-surface rounded-lg border border-outline-variant p-lg shadow-sm">
-<h3 class="font-label-caps text-on-surface-variant mb-md border-b border-outline-variant pb-sm uppercase tracking-widest">Proceso Secuencial de Boosting</h3>
-<div class="grid-pattern border border-outline-variant rounded bg-white overflow-hidden flex justify-center p-md">
-<img class="max-w-full h-auto object-contain rounded shadow-sm border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI-RDUJdZGegGcYxv-FjIOF54M7Q5UIKptfTTRW4TVUBqUarofehOjnySEJPMKwJ_5VjG2Z1ibYldEw2w-Kwo5FhPi6Vkanu51DC4a60CT7wT_8v51ZEbxbX2Stb34o-3FfHcPRp7Ptuj3NFJmU9wOIYXBu135hFLfrHlNUH59gVHeHCvRI9rug2Aq2pJFJu6q-uSKRRF6o9-cCb82XaRXLYdYTGjY4g07huCbx6ZGsAZNny9vSwn8Vg"/>
-</div>
-</section>
+    <!-- Diagrama del proceso secuencial -->
+    <section class="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant bg-surface-container-low">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-[#F97316]">swap_vert</span>
+                <h2 class="font-label-caps text-on-surface tracking-wider">Proceso Secuencial de Boosting</h2>
+            </div>
+            <span class="text-[10px] font-mono-data text-on-surface-variant/60">Iterativo · Corrección de errores</span>
+        </div>
+        <div class="p-6 bg-grid-pattern">
+            <div class="grid-pattern border border-outline-variant/50 rounded-xl bg-white/50 overflow-hidden flex justify-center p-4">
+                <img class="max-w-full h-auto object-contain rounded-lg shadow-sm border border-outline-variant" 
+                     alt="Diagrama del proceso secuencial de Boosting: iteraciones con pesos de datos" 
+                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI-RDUJdZGegGcYxv-FjIOF54M7Q5UIKptfTTRW4TVUBqUarofehOjnySEJPMKwJ_5VjG2Z1ibYldEw2w-Kwo5FhPi6Vkanu51DC4a60CT7wT_8v51ZEbxbX2Stb34o-3FfHcPRp7Ptuj3NFJmU9wOIYXBu135hFLfrHlNUH59gVHeHCvRI9rug2Aq2pJFJu6q-uSKRRF6o9-cCb82XaRXLYdYTGjY4g07huCbx6ZGsAZNny9vSwn8Vg"/>
+            </div>
+            <p class="font-body-sm text-on-surface-variant mt-4 text-center text-sm italic">
+                <span class="material-symbols-outlined text-[16px] align-middle">repeat</span>
+                Figura 1: Cada iteración ajusta los pesos de las instancias, enfocándose en los errores previos.
+            </p>
+        </div>
+    </section>
 
-<!-- Technical Details & Examples -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
-<!-- Technical Details -->
-<section class="bg-surface rounded-lg border border-outline-variant p-lg shadow-sm flex flex-col h-full">
-<h3 class="font-label-caps text-on-surface-variant mb-md border-b border-outline-variant pb-sm uppercase tracking-widest flex items-center justify-between">
-<span>Ajuste de Pesos (Errores)</span>
-<span class="material-symbols-outlined text-[18px] cursor-help text-secondary" title="Detalles técnicos">info</span>
-</h3>
-<div class="flex-1 space-y-md">
-<p class="font-body-md text-on-surface">
-El concepto clave del Boosting reside en el manejo de los datos de entrenamiento a través del tiempo.
-</p>
-<ul class="list-disc list-inside space-y-sm font-body-sm text-on-surface-variant">
-<li><strong>Modelo 1:</strong> Entrena con datos iniciales (pesos uniformes).</li>
-<li><strong>Identificación de Errores:</strong> Se evalúa el Modelo 1. Los puntos mal clasificados reciben un <em>aumento</em> en su peso.</li>
-<li><strong>Modelo 2:</strong> Entrena con los datos ponderados, enfocándose obligatoriamente en los casos difíciles que el Modelo 1 falló.</li>
-<li><strong>Iteración:</strong> Este proceso se repite, agregando modelos secuencialmente.</li>
-</ul>
-</div>
-</section>
+    <!-- Grid: Mecanismo + Algoritmos -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Mecanismo de ajuste de pesos -->
+        <section class="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow h-full">
+            <div class="px-5 py-4 border-b border-outline-variant bg-[#F97316]/5">
+                <h3 class="font-label-caps text-on-surface tracking-wider flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[#F97316] text-[20px]">balance</span>
+                    Ajuste de Pesos (Errores)
+                </h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <p class="font-body-sm text-on-surface leading-relaxed">
+                    El núcleo del Boosting es el <span class="font-medium">redistribución de pesos</span> en cada iteración:
+                </p>
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3 p-3 bg-surface-container-low rounded-lg border border-outline-variant/50">
+                        <span class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F97316]/10 flex items-center justify-center text-xs font-bold text-[#F97316]">1</span>
+                        <div>
+                            <span class="font-headline-sm text-[#F97316] text-sm">Modelo 1</span>
+                            <p class="font-body-sm text-on-surface-variant">Entrena con datos iniciales (pesos uniformes).</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 p-3 bg-surface-container-low rounded-lg border border-outline-variant/50">
+                        <span class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F97316]/10 flex items-center justify-center text-xs font-bold text-[#F97316]">2</span>
+                        <div>
+                            <span class="font-headline-sm text-[#F97316] text-sm">Identificación de Errores</span>
+                            <p class="font-body-sm text-on-surface-variant">Las instancias mal clasificadas reciben <span class="bg-[#F97316]/10 px-1.5 py-0.5 rounded font-medium">mayor peso</span>.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 p-3 bg-surface-container-low rounded-lg border border-outline-variant/50">
+                        <span class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F97316]/10 flex items-center justify-center text-xs font-bold text-[#F97316]">3</span>
+                        <div>
+                            <span class="font-headline-sm text-[#F97316] text-sm">Modelo 2</span>
+                            <p class="font-body-sm text-on-surface-variant">Entrena con datos ponderados, enfocándose en los casos difíciles.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 p-3 bg-surface-container-low rounded-lg border border-outline-variant/50">
+                        <span class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F97316]/10 flex items-center justify-center text-xs font-bold text-[#F97316]">...</span>
+                        <div>
+                            <span class="font-headline-sm text-[#F97316] text-sm">Iteración</span>
+                            <p class="font-body-sm text-on-surface-variant">Se repite <span class="font-mono-data">m</span> veces, agregando modelos secuencialmente.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-<!-- Key Examples -->
-<section class="bg-surface rounded-lg border border-outline-variant p-lg shadow-sm flex flex-col h-full border-l-4 border-l-[#F97316]">
-<h3 class="font-label-caps text-on-surface-variant mb-md border-b border-outline-variant pb-sm uppercase tracking-widest">Algoritmos Destacados</h3>
-<div class="space-y-4 flex-1">
-<div class="border border-outline-variant rounded p-sm bg-surface-container-low hover:border-[#CBD5E1] transition-colors">
-<h4 class="font-headline-sm text-on-surface mb-xs">AdaBoost (Adaptive Boosting)</h4>
-<p class="font-body-sm text-on-surface-variant">Ajusta los pesos de las instancias de datos basándose en los errores. Utiliza "tocones" de árboles de decisión (stumps).</p>
-</div>
-<div class="border border-outline-variant rounded p-sm bg-surface-container-low hover:border-[#CBD5E1] transition-colors">
-<h4 class="font-headline-sm text-on-surface mb-xs">Gradient Boosting</h4>
-<p class="font-body-sm text-on-surface-variant">En lugar de ajustar pesos, entrena los nuevos modelos sobre los <em>residuos</em> (errores) del modelo anterior utilizando gradiente descendente.</p>
-</div>
-<div class="border border-outline-variant rounded p-sm bg-surface-container-low hover:border-[#CBD5E1] transition-colors">
-<h4 class="font-headline-sm text-on-surface mb-xs">XGBoost / LightGBM</h4>
-<p class="font-body-sm text-on-surface-variant">Implementaciones avanzadas y optimizadas de Gradient Boosting, cruciales en competiciones de ciencia de datos por su rendimiento.</p>
-</div>
-</div>
-</section>
-</div>
+        <!-- Algoritmos destacados -->
+        <section class="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow h-full">
+            <div class="px-5 py-4 border-b border-outline-variant bg-[#F97316]/5 border-l-4 border-l-[#F97316]">
+                <h3 class="font-label-caps text-on-surface tracking-wider flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[#F97316] text-[20px]">code</span>
+                    Algoritmos Destacados
+                </h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <div class="border border-outline-variant rounded-xl p-4 bg-surface-container-low hover:border-[#F97316]/30 transition-colors">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="material-symbols-outlined text-[#F97316] text-[20px]">bolt</span>
+                        <h4 class="font-headline-sm text-on-surface">AdaBoost</h4>
+                        <span class="text-[9px] font-mono-data bg-[#F97316]/10 px-2 py-0.5 rounded-full text-[#F97316]">Adaptive</span>
+                    </div>
+                    <p class="font-body-sm text-on-surface-variant leading-relaxed">
+                        Ajusta pesos de instancias basándose en errores. Utiliza <span class="font-medium">"stumps"</span> 
+                        (árboles de decisión de un solo nivel) como aprendices débiles.
+                    </p>
+                </div>
+                <div class="border border-outline-variant rounded-xl p-4 bg-surface-container-low hover:border-[#F97316]/30 transition-colors">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="material-symbols-outlined text-[#F97316] text-[20px]">gradient</span>
+                        <h4 class="font-headline-sm text-on-surface">Gradient Boosting</h4>
+                        <span class="text-[9px] font-mono-data bg-[#F97316]/10 px-2 py-0.5 rounded-full text-[#F97316]">GBM</span>
+                    </div>
+                    <p class="font-body-sm text-on-surface-variant leading-relaxed">
+                        Entrena nuevos modelos sobre los <span class="font-medium">residuos (errores)</span> del modelo 
+                        anterior utilizando <span class="bg-[#F97316]/10 px-1.5 py-0.5 rounded">gradiente descendente</span>.
+                    </p>
+                </div>
+                <div class="border border-outline-variant rounded-xl p-4 bg-surface-container-low hover:border-[#F97316]/30 transition-colors">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="material-symbols-outlined text-[#F97316] text-[20px]">rocket_launch</span>
+                        <h4 class="font-headline-sm text-on-surface">XGBoost / LightGBM</h4>
+                        <span class="text-[9px] font-mono-data bg-[#F97316]/10 px-2 py-0.5 rounded-full text-[#F97316]">SOTA</span>
+                    </div>
+                    <p class="font-body-sm text-on-surface-variant leading-relaxed">
+                        Implementaciones avanzadas y <span class="font-medium">optimizadas</span> de Gradient Boosting, 
+                        ampliamente utilizadas en competiciones de ciencia de datos por su <span class="font-medium">rendimiento superior</span>.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
 
-<!-- Pros/Cons Table -->
-<section class="bg-surface rounded-lg border border-outline-variant p-lg shadow-sm">
-<h3 class="font-label-caps text-on-surface-variant mb-md border-b border-outline-variant pb-sm uppercase tracking-widest">Evaluación de Boosting</h3>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-outline-variant border border-outline-variant rounded overflow-hidden">
-<div class="bg-surface p-md">
-<h4 class="font-headline-sm text-[#0D9488] mb-sm flex items-center space-x-sm">
-<span class="material-symbols-outlined">check_circle</span>
-<span>Ventajas (Pros)</span>
-</h4>
-<ul class="space-y-xs font-body-sm text-on-surface">
-<li class="flex items-start space-x-2"><span class="text-[#0D9488]">•</span><span>Alta precisión predictiva, a menudo supera a otros algoritmos.</span></li>
-<li class="flex items-start space-x-2"><span class="text-[#0D9488]">•</span><span>Maneja relaciones no lineales complejas.</span></li>
-<li class="flex items-start space-x-2"><span class="text-[#0D9488]">•</span><span>Robusto frente a datos atípicos (especialmente Gradient Boosting con funciones de pérdida robustas).</span></li>
-</ul>
-</div>
-<div class="bg-surface p-md">
-<h4 class="font-headline-sm text-error mb-sm flex items-center space-x-sm">
-<span class="material-symbols-outlined">cancel</span>
-<span>Desventajas (Contras)</span>
-</h4>
-<ul class="space-y-xs font-body-sm text-on-surface">
-<li class="flex items-start space-x-2"><span class="text-error">•</span><span>Sensible al sobreajuste (overfitting) si hay mucho ruido o si se entrena por demasiadas iteraciones.</span></li>
-<li class="flex items-start space-x-2"><span class="text-error">•</span><span>Lento de entrenar debido a su naturaleza secuencial (no se puede paralelizar fácilmente).</span></li>
-<li class="flex items-start space-x-2"><span class="text-error">•</span><span>Requiere ajuste cuidadoso de hiperparámetros.</span></li>
-</ul>
-</div>
-</div>
-</section>
-</div>
+    <!-- Evaluación de Boosting: Pros y Contras -->
+    <section class="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div class="px-6 py-4 border-b border-outline-variant bg-surface-container-low">
+            <h3 class="font-label-caps text-on-surface tracking-wider flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#F97316] text-[20px]">assessment</span>
+                Evaluación de Boosting
+            </h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-outline-variant">
+            <!-- Pros -->
+            <div class="p-6">
+                <h4 class="font-headline-sm text-emerald-600 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    Ventajas Estratégicas
+                </h4>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-emerald-500 text-[18px] mt-0.5">trophy</span>
+                        <span class="font-body-sm text-on-surface"><strong>Alta precisión</strong> — frecuentemente supera a otros algoritmos en benchmarks.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-emerald-500 text-[18px] mt-0.5">auto_awesome</span>
+                        <span class="font-body-sm text-on-surface"><strong>Relaciones complejas</strong> — captura interacciones no lineales sofisticadas.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-emerald-500 text-[18px] mt-0.5">shield</span>
+                        <span class="font-body-sm text-on-surface"><strong>Robustez</strong> — especialmente Gradient Boosting con funciones de pérdida robustas frente a outliers.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-emerald-500 text-[18px] mt-0.5">flexible</span>
+                        <span class="font-body-sm text-on-surface"><strong>Flexibilidad</strong> — permite optimizar diferentes funciones de pérdida.</span>
+                    </li>
+                </ul>
+            </div>
+            <!-- Contras -->
+            <div class="p-6">
+                <h4 class="font-headline-sm text-rose-600 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined">cancel</span>
+                    Limitaciones Críticas
+                </h4>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-rose-400 text-[18px] mt-0.5">warning</span>
+                        <span class="font-body-sm text-on-surface"><strong>Sobreajuste</strong> — sensible a ruido y a iteraciones excesivas.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-rose-400 text-[18px] mt-0.5">hourglass</span>
+                        <span class="font-body-sm text-on-surface"><strong>Entrenamiento lento</strong> — naturaleza secuencial (no paralelizable).</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-rose-400 text-[18px] mt-0.5">tune</span>
+                        <span class="font-body-sm text-on-surface"><strong>Hiperparámetros</strong> — requiere ajuste cuidadoso (learning rate, profundidad, etc.).</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-rose-400 text-[18px] mt-0.5">vulnerable</span>
+                        <span class="font-body-sm text-on-surface"><strong>Outliers</strong> — puede sobreajustarse a valores atípicos sin regularización adecuada.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Explicación Profesional del Concepto -->
+    <section class="bg-gradient-to-r from-[#F97316]/5 to-transparent rounded-xl border border-[#F97316]/20 p-6">
+        <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-full bg-[#F97316]/10 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-[#F97316] text-2xl">psychology_alt</span>
+            </div>
+            <div>
+                <h3 class="font-headline-sm text-[#F97316] mb-2">Fundamento Teórico del Boosting</h3>
+                <p class="font-body-sm text-on-surface-variant leading-relaxed max-w-4xl">
+                    El <strong class="text-[#F97316]">Boosting</strong> se basa en el principio de <span class="font-medium">aprendizaje secuencial</span> 
+                    y fue formalizado por Robert Schapire en 1990. La idea central es <span class="font-medium">convertir aprendices débiles</span> 
+                    (modelos que apenas superan el azar) en un <span class="font-medium">aprendiz fuerte</span> mediante la combinación ponderada 
+                    de sus predicciones. A diferencia del Bagging (que busca <span class="font-medium">reducir la varianza</span>), 
+                    el Boosting se enfoca en <span class="font-medium">reducir el sesgo</span> y la dependencia de los datos, 
+                    logrando modelos de alta precisión. La clave está en la <span class="font-medium">redistribución adaptativa de pesos</span> 
+                    en cada iteración, que fuerza a los modelos subsiguientes a concentrarse en las <span class="font-medium">regiones del espacio</span> 
+                    donde los modelos anteriores fallaron. Este enfoque ha demostrado ser <span class="font-medium">excepcionalmente efectivo</span> 
+                    en problemas de clasificación y regresión, especialmente cuando se combina con técnicas de regularización avanzadas.
+                </p>
+                <div class="mt-3 flex flex-wrap gap-3">
+                    <span class="text-[10px] font-mono-data bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant">Weak Learners</span>
+                    <span class="text-[10px] font-mono-data bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant">Sequential</span>
+                    <span class="text-[10px] font-mono-data bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant">Bias Reduction</span>
+                    <span class="text-[10px] font-mono-data bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant">Adaptive Weighting</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
 {% endblock %}
