@@ -1,9 +1,20 @@
 """
 ML Pipeline para EXPOULTI - Bagging vs Boosting
-Dataset: data2/heart_disease.csv
-- Clasificación: Heart Disease Status (Yes/No)
-- Regresión: Cholesterol Level  (alternativa: BMI)
+Dataset: UCI Heart Disease (Cleveland + Hungría + Suiza + Long Beach VA)
+  data2/heart_disease/processed.cleveland.data
+  data2/heart_disease/processed.hungarian.data
+  data2/heart_disease/processed.switzerland.data
+  data2/heart_disease/processed.va.data
+- Clasificación: Heart Disease Status (Yes/No), derivado de la columna "num"
+- Regresión: Cholesterol Level (alternativa: Resting Blood Pressure)
 Usa solo scikit-learn / pandas / matplotlib / seaborn
+
+Nota sobre el dataset: son los 4 archivos "processed.*.data" del repositorio
+UCI Heart Disease. Cada uno trae las mismas 14 columnas ya seleccionadas por
+los autores originales, con valores faltantes marcados como "?". Se combinan
+los 4 centros en un solo dataset (920 filas) para tener más datos que usando
+solo Cleveland (303 filas), a costa de más valores faltantes en las columnas
+que no todos los centros midieron (ver comentarios en load_data).
 """
 
 import os
@@ -36,29 +47,110 @@ from sklearn.utils.class_weight import compute_sample_weight
 
 # Rutas
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_PATH = os.path.join(BASE_DIR, "data2", "heart_disease.csv")
+DATA_DIR = os.path.join(BASE_DIR, "data2", "heart_disease")
 PLOT_DIR = os.path.join(BASE_DIR, "static", "plots")
 os.makedirs(PLOT_DIR, exist_ok=True)
 
+# Los 4 archivos "processed" del repositorio UCI Heart Disease (14 columnas,
+# sin cabecera, valores faltantes como "?")
+RAW_FILES = (
+    "processed.cleveland.data",
+    "processed.hungarian.data",
+    "processed.switzerland.data",
+    "processed.va.data",
+)
+RAW_COLUMNS = ["age", "sex", "cp", "trestbps", "chol", "fbs", "restecg",
+               "thalach", "exang", "oldpeak", "slope", "ca", "thal", "num"]
+
+# Renombramos a nombres legibles: así los gráficos de importancia de
+# variables y las tablas de la demo se entienden sin tener que consultar
+# el diccionario de datos original (heart-disease.names).
+COLUMN_RENAME = {
+    "age": "Age",
+    "sex": "Sex",
+    "cp": "Chest Pain Type",
+    "trestbps": "Resting Blood Pressure",
+    "chol": "Cholesterol Level",
+    "fbs": "Fasting Blood Sugar",
+    "restecg": "Resting ECG",
+    "thalach": "Max Heart Rate",
+    "exang": "Exercise Induced Angina",
+    "oldpeak": "ST Depression",
+    "slope": "ST Slope",
+    "ca": "Major Vessels Colored",
+    "thal": "Thalassemia",
+}
+
+# Códigos numéricos -> categorías legibles, según heart-disease.names.
+# Convertirlos a texto (en vez de dejarlos como 1.0/2.0/3.0) hace que el
+# OneHotEncoder los trate como categorías reales y no como una escala
+# continua, y que las importancias de features salgan legibles.
+SEX_MAP = {1: "Male", 0: "Female"}
+CP_MAP = {1: "Typical Angina", 2: "Atypical Angina", 3: "Non-Anginal Pain", 4: "Asymptomatic"}
+FBS_MAP = {1: "Yes", 0: "No"}
+RESTECG_MAP = {0: "Normal", 1: "ST-T Abnormality", 2: "LV Hypertrophy"}
+EXANG_MAP = {1: "Yes", 0: "No"}
+SLOPE_MAP = {1: "Upsloping", 2: "Flat", 3: "Downsloping"}
+THAL_MAP = {3: "Normal", 6: "Fixed Defect", 7: "Reversible Defect"}
+
 # Columnas
 TARGET_CLASS = "Heart Disease Status"
-TARGET_REG = "Cholesterol Level"  # principal regresión
-TARGET_REG_ALT = "BMI"
-CATEGORICAL_HINT = ["Gender","Exercise Habits","Smoking","Family Heart Disease","Diabetes",
-                    "High Blood Pressure","Low HDL Cholesterol","High LDL Cholesterol",
-                    "Alcohol Consumption","Stress Level","Sugar Consumption"]
-NUMERIC_HINT = ["Age","Blood Pressure","BMI","Sleep Hours","Triglyceride Level",
-                "Fasting Blood Sugar","CRP Level","Homocysteine Level","Cholesterol Level"]
+TARGET_REG = "Cholesterol Level"       # principal regresión
+TARGET_REG_ALT = "Resting Blood Pressure"
+CATEGORICAL_HINT = ["Sex", "Chest Pain Type", "Fasting Blood Sugar", "Resting ECG",
+                     "Exercise Induced Angina", "ST Slope", "Thalassemia"]
+NUMERIC_HINT = ["Age", "Resting Blood Pressure", "Cholesterol Level", "Max Heart Rate",
+                "ST Depression", "Major Vessels Colored"]
+
 
 @lru_cache(maxsize=4)
-def _read_csv_cached(path):
-    # cachea la lectura del CSV en memoria: el demo reentrena varias veces
-    # por sesión y volver a leer 10k filas cada vez era el mayor costo de tiempo
-    return pd.read_csv(path)
+def _read_raw_cached(dir_path, files):
+    # cachea la lectura/combinación de los 4 archivos: el demo reentrena
+    # varias veces por sesión y volver a leer y unir los CSV cada vez era
+    # el mayor costo de tiempo
+    frames = []
+    for fname in files:
+        path = os.path.join(dir_path, fname)
+        df = pd.read_csv(path, header=None, names=RAW_COLUMNS, na_values="?")
+        df["Source"] = fname.replace("processed.", "").replace(".data", "")
+        frames.append(df)
+    return pd.concat(frames, ignore_index=True)
 
-def load_data(path=DATA_PATH):
+
+def load_data(dir_path=DATA_DIR):
     # devolvemos una copia para que nadie mute el dataframe cacheado
-    return _read_csv_cached(path).copy()
+    df = _read_raw_cached(dir_path, RAW_FILES).copy()
+
+    # chol = 0 no es un colesterol real (sería incompatible con la vida): es
+    # el valor centinela que usaron Suiza (123/123 filas) y Long Beach VA
+    # (49/200 filas) para "no medido". Si no lo tratamos como NaN, el modelo
+    # de regresión aprendería un patrón falso en vez de imputar de verdad.
+    df.loc[df["chol"] == 0, "chol"] = np.nan
+
+    # Mapear códigos numéricos a categorías legibles
+    df["sex"] = df["sex"].map(SEX_MAP)
+    df["cp"] = df["cp"].map(CP_MAP)
+    df["fbs"] = df["fbs"].map(FBS_MAP)
+    df["restecg"] = df["restecg"].map(RESTECG_MAP)
+    df["exang"] = df["exang"].map(EXANG_MAP)
+    df["slope"] = df["slope"].map(SLOPE_MAP)
+    df["thal"] = df["thal"].map(THAL_MAP)
+
+    # Target de clasificación: "num" original mide severidad angiográfica
+    # (0 = sin obstrucción significativa, 1-4 = distintos grados). Igual que
+    # en la versión anterior de este pipeline, la tarea de clasificación es
+    # binaria: ¿hay evidencia de enfermedad cardíaca o no?
+    df[TARGET_CLASS] = np.where(df["num"] > 0, "Yes", "No")
+    df = df.drop(columns=["num"])
+
+    # "Source" (de qué centro médico viene la fila) no se usa como feature:
+    # es metadata de recolección, no un dato clínico del paciente, y además
+    # se correlaciona demasiado con los valores faltantes (ver nota de chol).
+    df = df.drop(columns=["Source"])
+
+    df = df.rename(columns=COLUMN_RENAME)
+    return df
+
 
 def build_preprocessor(df, target_col, numeric_cols=None, categorical_cols=None):
     if numeric_cols is None or categorical_cols is None:
@@ -84,21 +176,23 @@ def build_preprocessor(df, target_col, numeric_cols=None, categorical_cols=None)
     ])
     return pre, numeric_cols, categorical_cols
 
+
 def split_classification(df, test_size=0.2, random_state=42):
     # mapear target a binario
     df = df.copy()
-    df[TARGET_CLASS] = df[TARGET_CLASS].map({"Yes":1, "No":0})
+    df[TARGET_CLASS] = df[TARGET_CLASS].map({"Yes": 1, "No": 0})
     # eliminar filas donde target es NaN (no hay)
     df = df.dropna(subset=[TARGET_CLASS])
     X = df.drop(columns=[TARGET_CLASS])
     y = df[TARGET_CLASS].astype(int)
     return train_test_split(X, y, test_size=test_size, random_state=random_state, stratify=y)
 
+
 def split_regression(df, target_col=TARGET_REG, test_size=0.2, random_state=42):
     df = df.copy()
-    # eliminar target NaN
+    # eliminar target NaN (incluye los "colesterol 0" reconvertidos arriba)
     df = df.dropna(subset=[target_col])
-    # Para regresión de Cholesterol, evitar leakage: quitar Heart Disease Status del X
+    # Para regresión, evitar leakage: quitar Heart Disease Status del X
     drop_cols = [target_col]
     # opcional: si target es Cholesterol, también quitar Heart Disease Status para no filtrar info clínica futura
     if TARGET_CLASS in df.columns:
@@ -106,6 +200,7 @@ def split_regression(df, target_col=TARGET_REG, test_size=0.2, random_state=42):
     X = df.drop(columns=drop_cols, errors="ignore")
     y = df[target_col]
     return train_test_split(X, y, test_size=test_size, random_state=random_state)
+
 
 # ---------- ENTRENAMIENTO CLASIFICACIÓN ----------
 def train_classification(n_estimators=100, learning_rate=0.1, random_state=42):
@@ -122,12 +217,11 @@ def train_classification(n_estimators=100, learning_rate=0.1, random_state=42):
     results = {}
     fitted = {}
 
-    # El dataset está desbalanceado (~80/20). RF ya balancea internamente vía
-    # class_weight="balanced", pero GradientBoosting/AdaBoost no aceptan ese
-    # parámetro, así que antes entrenaban "a ciegas" y colapsaban a predecir
-    # siempre la clase mayoritaria (precision/recall = 0 para "Yes"). Se
-    # replica el mismo balanceo con sample_weight para que la comparación
-    # Bagging vs Boosting sea justa.
+    # Al combinar los 4 centros el desbalance de clases es más leve que en el
+    # dataset anterior, pero igual conviene balancear para que la comparación
+    # Bagging vs Boosting sea justa: RF ya balancea internamente vía
+    # class_weight="balanced", GradientBoosting/AdaBoost no aceptan ese
+    # parámetro, así que se replica el mismo balanceo con sample_weight.
     sample_weight = compute_sample_weight(class_weight="balanced", y=y_train)
 
     for name, clf in models.items():
@@ -137,7 +231,7 @@ def train_classification(n_estimators=100, learning_rate=0.1, random_state=42):
         else:
             pipe.fit(X_train, y_train, classifier__sample_weight=sample_weight)
         y_pred = pipe.predict(X_test)
-        y_proba = pipe.predict_proba(X_test)[:,1] if hasattr(pipe, "predict_proba") else None
+        y_proba = pipe.predict_proba(X_test)[:, 1] if hasattr(pipe, "predict_proba") else None
         acc = accuracy_score(y_test, y_pred)
         prec = precision_score(y_test, y_pred, zero_division=0)
         rec = recall_score(y_test, y_pred, zero_division=0)
@@ -160,9 +254,10 @@ def train_classification(n_estimators=100, learning_rate=0.1, random_state=42):
     plot_paths["threshold_curve"] = plot_threshold_curves(results, "threshold_curve.png")
     plot_paths["perm_importance"] = plot_permutation_importance(fitted["Bagging_RF"], X_test, y_test, num_cols, cat_cols, "perm_importance.png")
     # tabla métricas
-    metrics = {k: {m: float(v) for m,v in res.items() if m in ["accuracy","precision","recall","f1","roc_auc"] and v is not None} for k,res in results.items()}
+    metrics = {k: {m: float(v) for m, v in res.items() if m in ["accuracy", "precision", "recall", "f1", "roc_auc"] and v is not None} for k, res in results.items()}
 
     return {"metrics": metrics, "plots": plot_paths, "numeric_cols": num_cols, "categorical_cols": cat_cols}
+
 
 # ---------- ENTRENAMIENTO REGRESIÓN ----------
 def train_regression(target_col=TARGET_REG, n_estimators=100, learning_rate=0.1, random_state=42):
@@ -192,16 +287,17 @@ def train_regression(target_col=TARGET_REG, n_estimators=100, learning_rate=0.1,
     plot_paths["scatter_gb"] = plot_regression_scatter(results["Boosting_GB"]["y_test"], results["Boosting_GB"]["y_pred"], f"Boosting GB - {target_col}", "reg_scatter_gb.png")
     plot_paths["residual_rf"] = plot_residuals(results["Bagging_RF"]["y_test"], results["Bagging_RF"]["y_pred"], "Bagging RF - Residuales", "reg_residual_rf.png")
     plot_paths["residual_gb"] = plot_residuals(results["Boosting_GB"]["y_test"], results["Boosting_GB"]["y_pred"], "Boosting GB - Residuales", "reg_residual_gb.png")
-    plot_paths["feat_rf"] = plot_feature_importance(fitted["Bagging_RF"], num_cols, cat_cols, "Bagging RF - Importancia", f"reg_feat_rf_{target_col.replace(' ','_')}.png", is_regressor=True)
-    plot_paths["feat_gb"] = plot_feature_importance(fitted["Boosting_GB"], num_cols, cat_cols, "Boosting GB - Importancia", f"reg_feat_gb_{target_col.replace(' ','_')}.png", is_regressor=True)
+    plot_paths["feat_rf"] = plot_feature_importance(fitted["Bagging_RF"], num_cols, cat_cols, "Bagging RF - Importancia", f"reg_feat_rf_{target_col.replace(' ', '_')}.png", is_regressor=True)
+    plot_paths["feat_gb"] = plot_feature_importance(fitted["Boosting_GB"], num_cols, cat_cols, "Boosting GB - Importancia", f"reg_feat_gb_{target_col.replace(' ', '_')}.png", is_regressor=True)
 
-    metrics = {k: {m: float(v) for m,v in res.items() if m in ["mae","mse","rmse","r2"]} for k,res in results.items()}
+    metrics = {k: {m: float(v) for m, v in res.items() if m in ["mae", "mse", "rmse", "r2"]} for k, res in results.items()}
     return {"metrics": metrics, "plots": plot_paths, "target": target_col}
+
 
 # ---------- PLOTS ----------
 def plot_confusion(y_true, y_pred, title, filename):
     cm = confusion_matrix(y_true, y_pred)
-    plt.figure(figsize=(4,4))
+    plt.figure(figsize=(4, 4))
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
     plt.title(title, fontsize=11)
     plt.xlabel("Predicho"); plt.ylabel("Real")
@@ -210,17 +306,19 @@ def plot_confusion(y_true, y_pred, title, filename):
     plt.savefig(path, dpi=150); plt.close()
     return f"plots/{filename}"
 
+
 def plot_roc_curves(results, filename):
-    plt.figure(figsize=(5,4))
+    plt.figure(figsize=(5, 4))
     for name, res in results.items():
         if res["y_proba"] is not None:
             RocCurveDisplay.from_predictions(res["y_test"], res["y_proba"], name=name, ax=plt.gca())
-    plt.plot([0,1],[0,1],"k--", lw=0.8)
+    plt.plot([0, 1], [0, 1], "k--", lw=0.8)
     plt.title("Curvas ROC - Bagging vs Boosting")
     plt.tight_layout()
     path = os.path.join(PLOT_DIR, filename)
     plt.savefig(path, dpi=150); plt.close()
     return f"plots/{filename}"
+
 
 def plot_feature_importance(pipe, num_cols, cat_cols, title, filename, is_regressor=False, top_n=10):
     # extraer feature names después de one-hot
@@ -228,7 +326,7 @@ def plot_feature_importance(pipe, num_cols, cat_cols, title, filename, is_regres
         pre = pipe.named_steps["preprocessor"]
         # nombres one-hot
         cat_enc = pre.named_transformers_["cat"].named_steps["onehot"]
-        cat_features = cat_enc.get_feature_names_out(cat_cols).tolist() if len(cat_cols)>0 else []
+        cat_features = cat_enc.get_feature_names_out(cat_cols).tolist() if len(cat_cols) > 0 else []
         feature_names = num_cols + cat_features
         est = pipe.named_steps["classifier"] if not is_regressor else pipe.named_steps["regressor"]
         importances = est.feature_importances_
@@ -236,7 +334,7 @@ def plot_feature_importance(pipe, num_cols, cat_cols, title, filename, is_regres
         idx = np.argsort(importances)[::-1][:top_n]
         top_names = [feature_names[i] for i in idx]
         top_imp = importances[idx]
-        plt.figure(figsize=(6,4))
+        plt.figure(figsize=(6, 4))
         sns.barplot(x=top_imp, y=top_names, hue=top_names, palette="viridis", legend=False)
         plt.title(title, fontsize=11)
         plt.xlabel("Importancia"); plt.tight_layout()
@@ -248,11 +346,12 @@ def plot_feature_importance(pipe, num_cols, cat_cols, title, filename, is_regres
         print("feat imp error", e)
         return None
 
+
 def plot_regression_scatter(y_true, y_pred, title, filename):
-    plt.figure(figsize=(4,4))
+    plt.figure(figsize=(4, 4))
     plt.scatter(y_true, y_pred, alpha=0.4, s=10, color="#006a61")
     mn, mx = min(y_true.min(), y_pred.min()), max(y_true.max(), y_pred.max())
-    plt.plot([mn,mx],[mn,mx],"r--", lw=1)
+    plt.plot([mn, mx], [mn, mx], "r--", lw=1)
     plt.title(title, fontsize=11)
     plt.xlabel("Real"); plt.ylabel("Predicho")
     plt.tight_layout()
@@ -260,9 +359,10 @@ def plot_regression_scatter(y_true, y_pred, title, filename):
     plt.savefig(path, dpi=150); plt.close()
     return f"plots/{filename}"
 
+
 def plot_residuals(y_true, y_pred, title, filename):
     res = y_true - y_pred
-    plt.figure(figsize=(4,4))
+    plt.figure(figsize=(4, 4))
     plt.scatter(y_pred, res, alpha=0.4, s=10, color="#93000a")
     plt.axhline(0, color="black", lw=0.8, ls="--")
     plt.title(title, fontsize=11)
@@ -272,10 +372,11 @@ def plot_residuals(y_true, y_pred, title, filename):
     plt.savefig(path, dpi=150); plt.close()
     return f"plots/{filename}"
 
+
 # ---------- NUEVOS PLOTS PARA CLASIFICACIÓN DESBALANCEADA ----------
 def plot_pr_curves(results, filename):
     """Curva Precision-Recall - mejor que ROC para clase minoritaria"""
-    plt.figure(figsize=(5,4))
+    plt.figure(figsize=(5, 4))
     for name, res in results.items():
         if res["y_proba"] is not None:
             prec, rec, _ = precision_recall_curve(res["y_test"], res["y_proba"])
@@ -292,26 +393,25 @@ def plot_pr_curves(results, filename):
     plt.savefig(path, dpi=150); plt.close()
     return f"plots/{filename}"
 
+
 def plot_prob_distribution(results, filename):
     """Distribución de probabilidades predichas por clase real - diagnostica AUC ~0.5.
 
-    Antes: el `return` estaba dentro del for, así que solo se generaba la
-    figura del primer modelo (Bagging_RF) y se abría una figura extra sin
-    cerrar en cada llamada (memory leak de matplotlib). Ahora se dibuja un
-    panel con una subgráfica por modelo, en una sola imagen.
+    Un panel con una subgráfica por modelo, en una sola imagen (evita el bug
+    de generar solo la figura del primer modelo y dejar figuras sin cerrar).
     """
     names_with_proba = [n for n, r in results.items() if r.get("y_proba") is not None]
     if not names_with_proba:
         return None
 
-    fig, axes = plt.subplots(1, len(names_with_proba), figsize=(5*len(names_with_proba), 4), squeeze=False)
+    fig, axes = plt.subplots(1, len(names_with_proba), figsize=(5 * len(names_with_proba), 4), squeeze=False)
     axes = axes[0]
     for ax, name in zip(axes, names_with_proba):
         res = results[name]
         y_test = res["y_test"]
         y_proba = res["y_proba"]
-        sns.kdeplot(x=y_proba[y_test==0], fill=True, alpha=0.35, label="Clase 0 (No)", color="#4575b4", ax=ax)
-        sns.kdeplot(x=y_proba[y_test==1], fill=True, alpha=0.35, label="Clase 1 (Yes)", color="#d73027", ax=ax)
+        sns.kdeplot(x=y_proba[y_test == 0], fill=True, alpha=0.35, label="Clase 0 (No)", color="#4575b4", ax=ax)
+        sns.kdeplot(x=y_proba[y_test == 1], fill=True, alpha=0.35, label="Clase 1 (Yes)", color="#d73027", ax=ax)
         ax.axvline(0.5, color="black", ls="--", lw=1, label="Umbral 0.5")
         ax.set_xlabel("Probabilidad predicha de Clase 1")
         ax.set_ylabel("Densidad")
@@ -325,11 +425,12 @@ def plot_prob_distribution(results, filename):
     plt.close(fig)
     return f"plots/{filename}"
 
+
 def plot_threshold_curves(results, filename):
     """Métricas vs umbral de decisión - elige corte óptimo"""
     from sklearn.metrics import precision_score, recall_score, f1_score
     thresholds = np.arange(0.05, 0.96, 0.05)
-    plt.figure(figsize=(6,4))
+    plt.figure(figsize=(6, 4))
     for name, res in results.items():
         if res["y_proba"] is not None:
             y_test = res["y_test"]
@@ -354,6 +455,7 @@ def plot_threshold_curves(results, filename):
     plt.savefig(path, dpi=150); plt.close()
     return f"plots/{filename}"
 
+
 def plot_permutation_importance(pipe, X_test, y_test, num_cols, cat_cols, filename, scoring="average_precision", n_repeats=10):
     """Importancia por permutación en test set - más robusta que feature_importances_"""
     try:
@@ -361,15 +463,15 @@ def plot_permutation_importance(pipe, X_test, y_test, num_cols, cat_cols, filena
         # nombres features
         pre = pipe.named_steps["preprocessor"]
         cat_enc = pre.named_transformers_["cat"].named_steps["onehot"]
-        cat_features = cat_enc.get_feature_names_out(cat_cols).tolist() if len(cat_cols)>0 else []
+        cat_features = cat_enc.get_feature_names_out(cat_cols).tolist() if len(cat_cols) > 0 else []
         feature_names = num_cols + cat_features
-        
+
         imp_mean = result.importances_mean
         idx = np.argsort(imp_mean)[::-1][:15]
         top_names = [feature_names[i] for i in idx]
         top_imp = imp_mean[idx]
-        
-        plt.figure(figsize=(6,5))
+
+        plt.figure(figsize=(6, 5))
         colors = plt.cm.viridis(np.linspace(0.2, 0.8, len(top_names)))
         bars = plt.barh(range(len(top_names)), top_imp[::-1], color=colors[::-1], edgecolor='white')
         plt.yticks(range(len(top_names)), top_names[::-1], fontsize=9)
@@ -382,6 +484,7 @@ def plot_permutation_importance(pipe, X_test, y_test, num_cols, cat_cols, filena
     except Exception as e:
         print("perm importance error", e)
         return None
+
 
 def dataset_summary():
     df = load_data()
