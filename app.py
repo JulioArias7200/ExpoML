@@ -3,7 +3,7 @@ from ml.pipeline import train_classification, train_regression, dataset_summary,
 
 app = Flask(__name__)
 
-REG_TARGETS = ["Cholesterol Level", "BMI", "Triglyceride Level", "Blood Pressure"]
+REG_TARGETS = ["Max Heart Rate", "Age", "Resting Blood Pressure"]
 
 def _parse_hparams():
     """Lee y acota n_estimators / learning_rate desde query o form.
@@ -58,9 +58,9 @@ def api_train_classification():
 @app.route('/api/train/regression', methods=['GET','POST'])
 def api_train_regression():
     try:
-        target = request.values.get('target', 'Cholesterol Level')
+        target = request.values.get('target', 'Max Heart Rate')
         if target not in REG_TARGETS:
-            target = "Cholesterol Level"
+            target = "Max Heart Rate"
         n_est, lr = _parse_hparams()
         result = train_regression(target_col=target, n_estimators=n_est, learning_rate=lr)
         plots_url = {k: url_for('static', filename=v) for k,v in result['plots'].items() if v}
@@ -74,9 +74,9 @@ def api_train_compare():
     # ejecuta ambos y retorna comparativa
     try:
         n_est, lr = _parse_hparams()
-        target = request.values.get('target', 'Cholesterol Level')
+        target = request.values.get('target', 'Max Heart Rate')
         if target not in REG_TARGETS:
-            target = "Cholesterol Level"
+            target = "Max Heart Rate"
         cls = train_classification(n_estimators=n_est, learning_rate=lr)
         reg = train_regression(target_col=target, n_estimators=n_est, learning_rate=lr)
         return jsonify({

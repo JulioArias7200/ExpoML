@@ -146,7 +146,7 @@
                                     Regresión
                                 </span>
                             </td>
-                            <td class="px-4 py-2.5 font-mono-data text-xs text-on-surface-variant">Cholesterol Level · Resting Blood Pressure</td>
+                            <td class="px-4 py-2.5 font-mono-data text-xs text-on-surface-variant">Max Heart Rate · Age · Resting Blood Pressure</td>
                             <td class="px-4 py-2.5 font-mono-data text-xs">RandomForestRegressor</td>
                             <td class="px-4 py-2.5 font-mono-data text-xs">GradientBoostingRegressor</td>
                         </tr>
@@ -204,12 +204,13 @@
                 <label class="font-label-caps text-on-surface-variant text-xs tracking-wider block mb-2">Variable de Regresión</label>
                 <div class="relative">
                     <select id="targetReg" class="w-full border border-outline-variant rounded-xl px-3 py-2 font-body-sm bg-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30 appearance-none">
-                        <option>Cholesterol Level</option>
-                        <option>Resting Blood Pressure</option>
+                        <option value="Max Heart Rate" selected>Max Heart Rate (Frec. Cardíaca)</option>
+                        <option value="Age">Age (Edad)</option>
+                        <option value="Resting Blood Pressure">Resting Blood Pressure (Presión)</option>
                     </select>
                     <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-[18px] pointer-events-none">expand_more</span>
                 </div>
-                <p class="text-[9px] text-on-surface-variant/50 mt-2">Selecciona target para regresión</p>
+                <p class="text-[9px] text-on-surface-variant/50 mt-2">Variables con correlación fisiológica (R² &gt; 0)</p>
             </div>
 
             <!-- Acciones -->

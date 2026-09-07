@@ -95,8 +95,8 @@ THAL_MAP = {3: "Normal", 6: "Fixed Defect", 7: "Reversible Defect"}
 
 # Columnas
 TARGET_CLASS = "Heart Disease Status"
-TARGET_REG = "Cholesterol Level"       # principal regresión
-TARGET_REG_ALT = "Resting Blood Pressure"
+TARGET_REG = "Max Heart Rate"       # principal regresión (fuerte correlación con Age y esfuerzo)
+TARGET_REG_ALT = "Age"
 CATEGORICAL_HINT = ["Sex", "Chest Pain Type", "Fasting Blood Sugar", "Resting ECG",
                      "Exercise Induced Angina", "ST Slope", "Thalassemia"]
 NUMERIC_HINT = ["Age", "Resting Blood Pressure", "Cholesterol Level", "Max Heart Rate",
@@ -253,6 +253,7 @@ def train_classification(n_estimators=100, learning_rate=0.1, random_state=42):
     plot_paths["prob_dist"] = plot_prob_distribution(results, "prob_dist.png")
     plot_paths["threshold_curve"] = plot_threshold_curves(results, "threshold_curve.png")
     plot_paths["perm_importance"] = plot_permutation_importance(fitted["Bagging_RF"], X_test, y_test, num_cols, cat_cols, "perm_importance.png")
+    plot_paths["corr_matrix"] = plot_correlation_heatmap(df, "Matriz de Correlación Clínica", "class_corr_heatmap.png")
     # tabla métricas
     metrics = {k: {m: float(v) for m, v in res.items() if m in ["accuracy", "precision", "recall", "f1", "roc_auc"] and v is not None} for k, res in results.items()}
 
@@ -289,6 +290,7 @@ def train_regression(target_col=TARGET_REG, n_estimators=100, learning_rate=0.1,
     plot_paths["residual_gb"] = plot_residuals(results["Boosting_GB"]["y_test"], results["Boosting_GB"]["y_pred"], "Boosting GB - Residuales", "reg_residual_gb.png")
     plot_paths["feat_rf"] = plot_feature_importance(fitted["Bagging_RF"], num_cols, cat_cols, "Bagging RF - Importancia", f"reg_feat_rf_{target_col.replace(' ', '_')}.png", is_regressor=True)
     plot_paths["feat_gb"] = plot_feature_importance(fitted["Boosting_GB"], num_cols, cat_cols, "Boosting GB - Importancia", f"reg_feat_gb_{target_col.replace(' ', '_')}.png", is_regressor=True)
+    plot_paths["corr_matrix"] = plot_correlation_heatmap(df, f"Matriz de Correlación ({target_col})", f"reg_corr_{target_col.replace(' ', '_')}.png")
 
     metrics = {k: {m: float(v) for m, v in res.items() if m in ["mae", "mse", "rmse", "r2"]} for k, res in results.items()}
     return {"metrics": metrics, "plots": plot_paths, "target": target_col}
@@ -371,6 +373,29 @@ def plot_residuals(y_true, y_pred, title, filename):
     path = os.path.join(PLOT_DIR, filename)
     plt.savefig(path, dpi=150); plt.close()
     return f"plots/{filename}"
+
+
+def plot_correlation_heatmap(df, title, filename):
+    """Genera matriz de correlación anotada para explicar con quién correlaciona cada variable"""
+    try:
+        num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+        corr = df[num_cols].corr()
+        plt.figure(figsize=(5.5, 4.5))
+        mask = np.triu(np.ones_like(corr, dtype=bool))
+        sns.heatmap(corr, mask=mask, annot=True, fmt=".2f", cmap="coolwarm", center=0,
+                    vmin=-0.45, vmax=0.45, square=True, linewidths=0.8,
+                    cbar_kws={"shrink": 0.8}, annot_kws={"size": 8})
+        plt.title(title, fontsize=10, fontweight="bold", pad=8)
+        plt.xticks(rotation=35, ha="right", fontsize=8)
+        plt.yticks(rotation=0, fontsize=8)
+        plt.tight_layout()
+        path = os.path.join(PLOT_DIR, filename)
+        plt.savefig(path, dpi=150)
+        plt.close()
+        return f"plots/{filename}"
+    except Exception as e:
+        print("corr heatmap error", e)
+        return None
 
 
 # ---------- NUEVOS PLOTS PARA CLASIFICACIÓN DESBALANCEADA ----------
